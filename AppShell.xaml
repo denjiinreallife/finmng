@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="FinancialManagement.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:FinancialManagement"
+    Shell.FlyoutBehavior="Disabled"
+    Title="FinancialManagement">
+
+    <Shell.MenuBarItems>
+        <MenuBarItem Text="File">
+            <MenuFlyoutItem Text="Import from ..." Clicked="OnDataImport" />
+            <MenuFlyoutSubItem  Text="Export to ...">
+                <MenuFlyoutItem Text="PDF" Clicked="OnPDFDataExport" />
+                <MenuFlyoutItem Text="Excel" Clicked="OnExcelDataExport" />
+            </MenuFlyoutSubItem>
+        </MenuBarItem>
+
+        <MenuBarItem Text="Style">
+            <MenuFlyoutItem Text="Graph" Clicked="ShowGraphStyle" />
+            <MenuFlyoutItem Text="Jams" Clicked="ShowJamsStyle" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Unit">
+            <MenuFlyoutItem Text="VND" Clicked="UseEnglish" />
+            <MenuFlyoutItem Text="USD" Clicked="UseEnglish" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Language">
+            <MenuFlyoutItem Text="English" Clicked="UseEnglish" />
+            <MenuFlyoutItem Text="Tiếng Việt" Clicked="UseEnglish" />
+        </MenuBarItem>
+    </Shell.MenuBarItems>
+
+    <ShellContent
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+
+</Shell>

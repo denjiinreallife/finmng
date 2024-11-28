@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="FinancialManagement.OutcomePopup"> 
+
+    <VerticalStackLayout 
+        Padding="30" 
+        Spacing="10" 
+        BackgroundColor="Black"
+        WidthRequest="400"  
+        HeightRequest="400" 
+        HorizontalOptions="Fill"
+        VerticalOptions="Center">
+
+        <Label Text="Outcome value" FontSize="16" />
+        <Entry Placeholder="Unit VND" Keyboard="Numeric" x:Name="OutcomeValue" />
+
+        <Label Text="Category" FontSize="16" />
+        <Picker x:Name="OutcomeCategory" SelectedIndex="0" SelectedIndexChanged="OnOutcomeCategoryChanged">
+            <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Choose outcome category</x:String>
+                    <x:String>Debt</x:String>
+                    <x:String>Other</x:String>
+                </x:Array>
+            </Picker.ItemsSource>
+        </Picker>
+
+        <Entry x:Name="OutcomeCustomCategory"
+           Placeholder="Enter custom category..."
+           IsVisible="False" />
+
+        <Label Text="Date" FontSize="16" />
+        <DatePicker x:Name="OutcomeDate"
+                    Format="dd/MM/yyyy"/>
+
+        <Label Text="Note" FontSize="16" />
+        <Entry Placeholder="Anynote" x:Name="OutcomeNote" />
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
+                <Button
+                    x:Name="OutcomeSubmitBtn"
+                    Text="Submit" 
+                    Clicked="OnOutcomeSubmitClicked"/>
+                <Button
+                    x:Name="OutcomeCloseBtn"
+                    Text="Close " 
+                    Clicked="OnOutcomeCloseClicked"/>
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</toolkit:Popup>
