@@ -477,3 +477,4 @@ C:\Users\tadie\OneDrive\Desktop\FinancialManagement\bin\Debug\net8.0-windows10.0
 C:\Users\tadie\OneDrive\Desktop\FinancialManagement\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\System.Security.Cryptography.Pkcs.dll
 C:\Users\tadie\OneDrive\Desktop\FinancialManagement\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\calendar_icon.scale-100.png
 C:\Users\tadie\OneDrive\Desktop\FinancialManagement\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\calendar_icon.scale-100.png
+C:\Users\tadie\OneDrive\Desktop\FinancialManagement\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\FinancialManagement.sourcelink.json

@@ -1,6 +1,8 @@
 using OfficeOpenXml; // Namespace của EPPlus
 using OfficeOpenXml.Style;
 using System.IO;
+using System.Collections.ObjectModel;
+using System.Globalization;
 
 public class ExcelService
 {
@@ -41,6 +43,7 @@ public class ExcelService
                 inoutWorksheet.Cells[1, 2].Value = "Category";
                 inoutWorksheet.Cells[1, 3].Value = "Value";
                 inoutWorksheet.Cells[1, 4].Value = "Note";
+                inoutWorksheet.Cells[1, 5].Value = "Timestamp"; 
                 inoutLastRow = 1;
             }
 
@@ -51,6 +54,8 @@ public class ExcelService
                 genreralWorksheet.Cells[1, 3].Value = "Category";
                 genreralWorksheet.Cells[1, 4].Value = "Value";
                 genreralWorksheet.Cells[1, 5].Value = "Note";
+                genreralWorksheet.Cells[1, 6].Value = "Timestamp";
+                // genreralWorksheet.Cells[1, 7].Value = "Summary";  
                 generalLastRow = 1;
             }
 
@@ -59,6 +64,8 @@ public class ExcelService
             inoutWorksheet.Cells[inoutLastRow + 1, 2].Value = category;
             inoutWorksheet.Cells[inoutLastRow + 1, 3].Value = value;
             inoutWorksheet.Cells[inoutLastRow + 1, 4].Value = note;
+            inoutWorksheet.Cells[inoutLastRow + 1, 5].Value = DateTime.Now;
+            inoutWorksheet.Cells[inoutLastRow + 1, 5].Style.Numberformat.Format = "dd/mm/yyyy";
 
             genreralWorksheet.Cells[generalLastRow + 1, 1].Value = date;
             genreralWorksheet.Cells[generalLastRow + 1, 1].Style.Numberformat.Format = "dd/mm/yyyy"; 
@@ -66,6 +73,10 @@ public class ExcelService
             genreralWorksheet.Cells[generalLastRow + 1, 3].Value = category;
             genreralWorksheet.Cells[generalLastRow + 1, 4].Value = value;
             genreralWorksheet.Cells[generalLastRow + 1, 5].Value = note;
+            genreralWorksheet.Cells[generalLastRow + 1, 6].Value = DateTime.Now;
+            genreralWorksheet.Cells[generalLastRow + 1, 6].Style.Numberformat.Format = "dd/mm/yyyy";
+            // var previousValue = generalLastRow == 1 ? 0 : genreralWorksheet.Cells[generalLastRow, 7].Value;
+            // genreralWorksheet.Cells[generalLastRow + 1, 7].Value = Convert.ToInt64(previousValue) + (isIncome ? value : -value);
 
             inoutWorksheet.Cells[inoutWorksheet.Dimension.Address].AutoFitColumns();
             genreralWorksheet.Cells[genreralWorksheet.Dimension.Address].AutoFitColumns();
@@ -74,4 +85,37 @@ public class ExcelService
 
         await Application.Current.MainPage.DisplayAlert("Success", "Data saved to Excel!", "OK");
     }
+    public ObservableCollection<inoutcomeData> ReadLatestData(string filePath)
+    {
+        var data = new ObservableCollection<inoutcomeData>();
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+        using (var package = new ExcelPackage(new FileInfo(filePath)))
+        {
+            var worksheet = package.Workbook.Worksheets[0]; // Lấy sheet đầu tiên
+            int rows = worksheet.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++) // Bỏ qua header (dòng 1)
+            {
+                var rowData = new inoutcomeData
+                {
+                    Date = DateTime.ParseExact(worksheet.Cells[i, 1].Text, "MM/dd/yyyy", CultureInfo.InvariantCulture).Date,
+                    Type = worksheet.Cells[i, 2].Text,
+                    Category = worksheet.Cells[i, 3].Text,
+                    Value = double.Parse(worksheet.Cells[i, 4].Text)
+
+                };
+                data.Add(rowData);
+            }
+        }
+        return data;
+    }
+}
+
+public class inoutcomeData
+{
+    public DateTime Date { get; set; }
+    public string Type { get; set; }
+    public string Category { get; set; }
+    public double Value { get; set; }
 }

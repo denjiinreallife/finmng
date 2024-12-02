@@ -12,7 +12,7 @@
                 HeightRequest="185"
                 Aspect="AspectFit" />
 
-            <Label
+            <!-- <Label
                 Text="Quote of the day"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
@@ -20,7 +20,7 @@
             <Label
                 Text="Not &#10; today"
                 Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"/>
+                SemanticProperties.HeadingLevel="Level2"/> -->
     
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="50">
                 <Button
@@ -32,6 +32,22 @@
                     Text="Add outcome" 
                     Clicked="AddOutcomeClicked"/>
             </HorizontalStackLayout>
+            <CollectionView ItemsSource="{Binding Data}" 
+                            SelectionMode="Single" 
+                            x:Name="ItemsCollectionView"
+                            SelectionChanged="OnItemSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Orientation="Horizontal" Padding="10" 
+                                    HorizontalOptions="Center">
+                            <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
+                            <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" />
+                            <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
+                            <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </VerticalStackLayout>
     </ScrollView>
 
