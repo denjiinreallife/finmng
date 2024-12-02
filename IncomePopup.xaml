@@ -7,12 +7,12 @@
 
     <VerticalStackLayout 
         Padding="30" 
-        Spacing="10" 
+        Spacing="5" 
         BackgroundColor="Black"
         WidthRequest="400"  
-        HeightRequest="400" 
-        HorizontalOptions="Fill"
-        VerticalOptions="Center">
+        HeightRequest="500" 
+        HorizontalOptions="FillAndExpand"
+        VerticalOptions="CenterAndExpand">
 
         <Label Text="Income value" FontSize="16" />
         <Entry Placeholder="Unit VND" Keyboard="Numeric" x:Name="IncomeValue" />
