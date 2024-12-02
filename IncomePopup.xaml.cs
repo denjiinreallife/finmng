@@ -32,16 +32,15 @@ public partial class IncomePopup : Popup
             note = "None";
         }
 
-        if (category == "Choose income category" || string.IsNullOrWhiteSpace(category))
-        {
-            Application.Current.MainPage.DisplayAlert("Error", "Please choose category", "OK");
-            return;
-        }
-
-        // Kiểm tra dữ liệu
         if (string.IsNullOrEmpty(value_text))
         {
             Application.Current.MainPage.DisplayAlert("Error", "Please input income value", "OK");
+            return;
+        }
+
+        if (category == "Choose income category" || string.IsNullOrWhiteSpace(category))
+        {
+            Application.Current.MainPage.DisplayAlert("Error", "Please choose category", "OK");
             return;
         }
 

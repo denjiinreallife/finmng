@@ -31,17 +31,16 @@ public partial class OutcomePopup : Popup
         {
             note = "None";
         }
-
-        if (category == "Choose Outcome category" || string.IsNullOrWhiteSpace(category))
+        
+        if (string.IsNullOrEmpty(value_text))
         {
-            Application.Current.MainPage.DisplayAlert("Error", "Please choose category", "OK");
+            Application.Current.MainPage.DisplayAlert("Error", "Please input outcome value", "OK");
             return;
         }
 
-        // Kiểm tra dữ liệu
-        if (string.IsNullOrEmpty(value_text))
+        if (category == "Choose outcome category" || string.IsNullOrWhiteSpace(category))
         {
-            Application.Current.MainPage.DisplayAlert("Error", "Please input Outcome value", "OK");
+            Application.Current.MainPage.DisplayAlert("Error", "Please choose category", "OK");
             return;
         }
 
