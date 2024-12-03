@@ -4,6 +4,11 @@ namespace FinancialManagement;
 
 public partial class OutcomePopup : Popup
 {
+    
+    public bool IsEditing { get; set; } = false; 
+    public inoutcomeData EditingData { get; set; } 
+    string[] readyCategories = { "Debt" };
+
     public OutcomePopup()
     {
         InitializeComponent();
@@ -45,10 +50,15 @@ public partial class OutcomePopup : Popup
         }
 
         Application.Current.MainPage.DisplayAlert("Outcome infomation", $"Outcome: {value}\nCategory: {category}\nDate: {date:dd/MM/yyyy}\nNote: {note}", "OK");
-        
-        var excelService = new ExcelService();
-        await excelService.SaveToExcel(false, date, category, value, note);
-
+        if (IsEditing)
+        {
+            Console.WriteLine("edit ne chu ko phai moi");
+        }
+        else
+        {
+            var excelService = new ExcelService();
+            await excelService.SaveToExcel(false, date, category, value, note);
+        }
         Close();
     }
     private void OnOutcomeCategoryChanged(object sender, EventArgs e)
@@ -67,6 +77,27 @@ public partial class OutcomePopup : Popup
         }
     }
 
+    public void LoadOutcomeDataForEdit(inoutcomeData data)
+    {
+        IsEditing = true;
+        EditingData = data;
+
+        OutcomeValue.Text = data.Value.ToString(); // Gán giá trị cho ô nhập số tiền
+
+        if (readyCategories.Contains(data.Category))
+        {
+            OutcomeCategory.SelectedItem = data.Category;
+            OutcomeCustomCategory.IsVisible = false;
+        }
+        else
+        {
+            OutcomeCategory.SelectedItem = "Other";
+            OutcomeCustomCategory.IsVisible = true;
+            OutcomeCustomCategory.Text = data.Category;
+        }
+        OutcomeDate.Date = data.Date; // Gán giá trị ngày tháng
+        OutcomeNote.Text = data.Note == "None" ? "" : data.Note; // Gán giá trị cho Note (dựa vào Type nếu phù hợp)
+    }
 
     private void OnOutcomeCloseClicked(object sender, EventArgs e)
     {
