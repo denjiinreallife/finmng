@@ -11,17 +11,6 @@
                 Source="dotnet_bot.png"
                 HeightRequest="185"
                 Aspect="AspectFit" />
-
-            <!-- <Label
-                Text="Quote of the day"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
-
-            <Label
-                Text="Not &#10; today"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"/> -->
-    
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="50">
                 <Button
                     x:Name="IncomeBtn"
@@ -32,22 +21,116 @@
                     Text="Add outcome" 
                     Clicked="AddOutcomeClicked"/>
             </HorizontalStackLayout>
-            <CollectionView ItemsSource="{Binding Data}" 
-                            SelectionMode="Single" 
-                            x:Name="ItemsCollectionView"
-                            SelectionChanged="OnItemSelected">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout Orientation="Horizontal" Padding="10" 
-                                    HorizontalOptions="Center">
-                            <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
-                            <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" />
-                            <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
-                            <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Frame x:Name="GeneralShowBtn"
+                    BackgroundColor="#1c1b1c"
+                    CornerRadius="10"
+                    Padding="10"
+                    HasShadow="False"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="120"
+                    HeightRequest="50"
+                    Scale="0.95">
+                    <Label Text="General"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        TextColor="gray"
+                        FontAttributes="Bold" />
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="ShowGeneralList" />
+                    </Frame.GestureRecognizers>
+                </Frame>
+                <Frame x:Name="IncomeShowBtn"
+                    BackgroundColor="Black"
+                    CornerRadius="10"
+                    Padding="10"
+                    HasShadow="True"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="120"
+                    HeightRequest="50">
+                    <Label Text="Income"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        TextColor="gray"
+                        FontAttributes="Bold" />
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="ShowIncomeList" />
+                    </Frame.GestureRecognizers>
+                </Frame>
+                <Frame x:Name="OutcomeShowBtn"
+                    BackgroundColor="Black"
+                    CornerRadius="10"
+                    Padding="10"
+                    HasShadow="True"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="120"
+                    HeightRequest="50">
+                    <Label Text="Outcome"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        TextColor="gray"
+                        FontAttributes="Bold" />
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="ShowOutcomeList" />
+                    </Frame.GestureRecognizers>
+                </Frame>
+            </HorizontalStackLayout>
+            <Grid>
+                <CollectionView ItemsSource="{Binding generalData}" 
+                                SelectionMode="Single" 
+                                x:Name="GeneralCollectionView"
+                                IsVisible="True"
+                                SelectionChanged="OnGeneralItemSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Orientation="Horizontal" Padding="10" 
+                                        HorizontalOptions="Center">
+                                <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
+                                <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" />
+                                <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
+                                <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <CollectionView ItemsSource="{Binding incomeData}" 
+                                SelectionMode="Single" 
+                                x:Name="IncomeCollectionView"
+                                IsVisible="False"
+                                SelectionChanged="OnIncomeItemSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Orientation="Horizontal" Padding="10" 
+                                        HorizontalOptions="Center">
+                                <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
+                                <!-- <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" /> -->
+                                <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
+                                <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <CollectionView ItemsSource="{Binding outcomeData}" 
+                                SelectionMode="Single" 
+                                x:Name="OutcomeCollectionView"
+                                IsVisible="False"
+                                SelectionChanged="OnOutcomeItemSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Orientation="Horizontal" Padding="10" 
+                                        HorizontalOptions="Center">
+                                <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
+                                <!-- <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" /> -->
+                                <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
+                                <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 

@@ -44,6 +44,11 @@
                     Text="Submit" 
                     Clicked="OnOutcomeSubmitClicked"/>
                 <Button
+                    x:Name="OutcomeDeleteBtn"
+                    Text="Delete" 
+                    Clicked="OnOutcomeDeleteClicked"
+                    IsVisible="False" />
+                <Button
                     x:Name="OutcomeCloseBtn"
                     Text="Close " 
                     Clicked="OnOutcomeCloseClicked"/>

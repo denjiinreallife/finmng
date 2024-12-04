@@ -9,7 +9,7 @@ public partial class EditPopup : ContentPage
         CurrentItem = item;
 
         // Bind dữ liệu từ item vào các ô Entry
-        DateEntry.Text = item.Date.ToString("MM/dd/yyyy");
+        DateEntry.Text = item.Date.ToString("dd/MM/yyyy");
         TypeEntry.Text = item.Type;
         CategoryEntry.Text = item.Category;
         ValueEntry.Text = item.Value.ToString();

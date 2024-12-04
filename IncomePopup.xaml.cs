@@ -1,4 +1,6 @@
 using CommunityToolkit.Maui.Views;
+using System.Text.RegularExpressions;
+
 
 namespace FinancialManagement;
 
@@ -8,7 +10,8 @@ public partial class IncomePopup : Popup
     public bool IsEditing { get; set; } = false; 
     public inoutcomeData EditingData { get; set; } 
     string[] readyCategories = { "Salary", "Debt", "Interest rate", "Freelance jobs" };
-
+    string filePath = Path.Combine(AppContext.BaseDirectory, "Data", "Test.xlsx");
+    ExcelService excelService = new ExcelService();
     public IncomePopup(MainPage mainPage)
     {
         InitializeComponent();
@@ -19,7 +22,6 @@ public partial class IncomePopup : Popup
     private async void OnIncomeSubmitClicked(object sender, EventArgs e)
     {
         string value_text = IncomeValue.Text;
-        int.TryParse(value_text, out int value);
         string note = IncomeNote.Text;
         string category;
         DateTime date = IncomeDate.Date;
@@ -43,6 +45,12 @@ public partial class IncomePopup : Popup
             Application.Current.MainPage.DisplayAlert("Error", "Please input income value", "OK");
             return;
         }
+        if (!Regex.IsMatch(value_text, @"^-?\d+(\.\d+)?$"))
+        {
+            Application.Current.MainPage.DisplayAlert("Error", "Invalid income value", "OK");
+            return;
+        }
+        int.TryParse(value_text, out int value);
 
         if (category == "Choose income category" || string.IsNullOrWhiteSpace(category))
         {
@@ -54,10 +62,6 @@ public partial class IncomePopup : Popup
 
         if (IsEditing)
         {
-            var excelService = new ExcelService();
-            string projectPath = AppContext.BaseDirectory;
-            string dataFolderPath = Path.Combine(projectPath, "Data");
-            string filePath = Path.Combine(dataFolderPath, "Test.xlsx");
             int rowIndexGeneral = excelService.FindRowIndex(filePath, "General", "ID", EditingData.ID); 
             if (rowIndexGeneral != -1)
             {
@@ -74,7 +78,6 @@ public partial class IncomePopup : Popup
         }
         else
         {
-            var excelService = new ExcelService();
             await excelService.SaveToExcel(true, date, category, value, note);
             _mainPage.LoadData(); 
         }
@@ -101,9 +104,10 @@ public partial class IncomePopup : Popup
     public void LoadIncomeDataForEdit(inoutcomeData data)
     {
         IsEditing = true;
+        IncomeDeleteBtn.IsVisible = true; 
         EditingData = data;
 
-        IncomeValue.Text = data.Value.ToString(); // Gán giá trị cho ô nhập số tiền
+        IncomeValue.Text = data.Value.ToString(); 
 
         if (readyCategories.Contains(data.Category))
         {
@@ -116,13 +120,29 @@ public partial class IncomePopup : Popup
             IncomeCustomCategory.IsVisible = true;
             IncomeCustomCategory.Text = data.Category;
         }
-        IncomeDate.Date = data.Date; // Gán giá trị ngày tháng
-        IncomeNote.Text = data.Note == "None" ? "" : data.Note; // Gán giá trị cho Note (dựa vào Type nếu phù hợp)
+        IncomeDate.Date = data.Date; 
+        IncomeNote.Text = data.Note == "None" ? "" : data.Note; 
     }
 
 
     private void OnIncomeCloseClicked(object sender, EventArgs e)
     {
         Close(); // Đóng popup
+    }
+    private async void OnIncomeDeleteClicked(object sender, EventArgs e)
+    {
+        if (EditingData == null)
+        {
+            await Application.Current.MainPage.DisplayAlert("Error", "No item to delete.", "OK");
+            return;
+        }
+
+        excelService.DeleteItemFromExcel(filePath, EditingData);
+
+        await Application.Current.MainPage.DisplayAlert("Success", "Item deleted successfully.", "OK");
+
+        _mainPage.LoadData();
+
+        Close();
     }
 }

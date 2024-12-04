@@ -47,6 +47,11 @@
                     Text="Submit" 
                     Clicked="OnIncomeSubmitClicked"/>
                 <Button
+                    x:Name="IncomeDeleteBtn"
+                    Text="Delete" 
+                    Clicked="OnIncomeDeleteClicked"
+                    IsVisible="False" />
+                <Button
                     x:Name="IncomeCloseBtn"
                     Text="Close " 
                     Clicked="OnIncomeCloseClicked"/>

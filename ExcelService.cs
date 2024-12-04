@@ -64,21 +64,21 @@ public class ExcelService
 
             inoutWorksheet.Cells[inoutLastRow + 1, 1].Value = ID;
             inoutWorksheet.Cells[inoutLastRow + 1, 2].Value = date;
-            inoutWorksheet.Cells[inoutLastRow + 1, 2].Style.Numberformat.Format = "dd/mm/yyyy"; 
+            inoutWorksheet.Cells[inoutLastRow + 1, 2].Style.Numberformat.Format = "dd/MM/yyyy"; 
             inoutWorksheet.Cells[inoutLastRow + 1, 3].Value = category;
             inoutWorksheet.Cells[inoutLastRow + 1, 4].Value = value;
             inoutWorksheet.Cells[inoutLastRow + 1, 5].Value = note;
             inoutWorksheet.Cells[inoutLastRow + 1, 6].Value = DateTime.Now;
-            inoutWorksheet.Cells[inoutLastRow + 1, 6].Style.Numberformat.Format = "dd/mm/yyyy";
+            inoutWorksheet.Cells[inoutLastRow + 1, 6].Style.Numberformat.Format = "dd/MM/yyyy";
 
-            genreralWorksheet.Cells[generalLastRow + 1, 1].Value = ID.ToString() + (isIncome ? "_Income" : "Outcome");
+            genreralWorksheet.Cells[generalLastRow + 1, 1].Value = ID.ToString() + (isIncome ? "_Income" : "_Outcome");
             genreralWorksheet.Cells[generalLastRow + 1, 2].Value = date;
-            genreralWorksheet.Cells[generalLastRow + 1, 2].Style.Numberformat.Format = "dd/mm/yyyy"; 
+            genreralWorksheet.Cells[generalLastRow + 1, 2].Style.Numberformat.Format = "dd/MM/yyyy"; 
             genreralWorksheet.Cells[generalLastRow + 1, 3].Value = category;
             genreralWorksheet.Cells[generalLastRow + 1, 4].Value = value;
             genreralWorksheet.Cells[generalLastRow + 1, 5].Value = note;
             genreralWorksheet.Cells[generalLastRow + 1, 6].Value = DateTime.Now;
-            genreralWorksheet.Cells[generalLastRow + 1, 6].Style.Numberformat.Format = "dd/mm/yyyy";
+            genreralWorksheet.Cells[generalLastRow + 1, 6].Style.Numberformat.Format = "dd/MM/yyyy";
             genreralWorksheet.Cells[generalLastRow + 1, 7].Value = isIncome ? "Income" : "Outcome";
 
             inoutWorksheet.Cells[inoutWorksheet.Dimension.Address].AutoFitColumns();
@@ -88,7 +88,7 @@ public class ExcelService
 
         await Application.Current.MainPage.DisplayAlert("Success", "Data saved to Excel!", "OK");
     }
-    public ObservableCollection<inoutcomeData> ReadLatestData(string filePath)
+    public ObservableCollection<inoutcomeData> ReadLatestData(string filePath, string sheetName)
     {
         var data = new ObservableCollection<inoutcomeData>();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -101,7 +101,7 @@ public class ExcelService
 
         using (var package = new ExcelPackage(new FileInfo(filePath)))
         {
-            var worksheet = package.Workbook.Worksheets[0]; // Lấy sheet đầu tiên
+            var worksheet = package.Workbook.Worksheets[sheetName]; // Lấy sheet đầu tiên
             int rows = worksheet.Dimension.Rows;
 
             for (int i = 2; i <= rows; i++) // Bỏ qua header (dòng 1)
@@ -109,8 +109,8 @@ public class ExcelService
                 var rowData = new inoutcomeData
                 {
                     ID = worksheet.Cells[i, 1].Text,
-                    Date = DateTime.TryParse(worksheet.Cells[i, 2].Text, out DateTime parsedDate) 
-                        ? parsedDate.Date 
+                    Date = DateTime.TryParseExact(worksheet.Cells[i, 2].Text, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate)
+                        ? parsedDate
                         : DateTime.MinValue,
                     Category = worksheet.Cells[i, 3].Text,
                     Value = double.Parse(worksheet.Cells[i, 4].Text),
@@ -190,6 +190,57 @@ public class ExcelService
             worksheet.Cells[rowIndex, 5].Value = note;                       // Cột Note
 
             package.Save(); // Lưu lại thay đổi
+        }
+    }
+
+    public void DeleteItemFromExcel(string filePath, inoutcomeData item)
+    {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        FileInfo fileInfo = new FileInfo(filePath);
+
+        using (var package = new ExcelPackage(fileInfo))
+        {
+            var generalworksheet = package.Workbook.Worksheets["General"]; 
+            var inoutcomeWorksheet = package.Workbook.Worksheets[item.Type];
+
+            int totalRows = generalworksheet.Dimension.Rows;
+            int rowToDelete = -1;
+            for (int row = 2; row <= totalRows; row++) 
+            {
+                if (generalworksheet.Cells[row, 1].Text == item.ID) 
+                {
+                    rowToDelete = row;
+                    break;
+                }
+            }
+            if (rowToDelete > 0)
+            {
+                generalworksheet.DeleteRow(rowToDelete); 
+            }
+            else
+            {
+                return;
+            }
+            totalRows = inoutcomeWorksheet.Dimension.Rows;
+            rowToDelete = -1;
+            string[] IDParts = item.ID.Split('_');
+            for (int row = 2; row <= totalRows; row++) 
+            {
+                if (inoutcomeWorksheet.Cells[row, 1].Text == IDParts[0]) 
+                {
+                    rowToDelete = row;
+                    break;
+                }
+            }
+            if (rowToDelete > 0)
+            {
+                inoutcomeWorksheet.DeleteRow(rowToDelete); 
+            }
+            else
+            {
+                return;
+            }
+            package.Save(); 
         }
     }
 
