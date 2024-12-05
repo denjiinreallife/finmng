@@ -1,0 +1,40 @@
+# Build Folders
+bin/
+obj/
+
+# User-specific files
+.vscode/
+*.userprefs
+*.suo
+*.user
+*.cache
+*.log
+
+# IDE-specific files
+.idea/
+*.vs/
+
+# Project files
+*.db
+*.db-journal
+
+# Auto-generated files
+*.designer.cs
+*.g.*
+*.lock.json
+project.lock.json
+*.csproj.user
+*.pdb
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Additional files
+*.tmp
+*.temp
+*.bak
+*.swp
