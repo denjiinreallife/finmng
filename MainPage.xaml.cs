@@ -3,19 +3,17 @@ using System.Collections.ObjectModel;
 namespace FinancialManagement;
 public partial class MainPage : ContentPage
 {
-    public ObservableCollection<inoutcomeData> generalData { get; set; } = new ObservableCollection<inoutcomeData>();
-    public ObservableCollection<inoutcomeData> incomeData { get; set; } = new ObservableCollection<inoutcomeData>();
-    public ObservableCollection<inoutcomeData> outcomeData { get; set; } = new ObservableCollection<inoutcomeData>();
-
-    string filePath = Path.Combine(AppContext.BaseDirectory, "Data", "Test.xlsx");
-    ExcelService excelService = new ExcelService();
+    public ObservableCollection<IncomeOutcome> generalData { get; set; } = new ObservableCollection<IncomeOutcome>();
+    public ObservableCollection<IncomeOutcome> incomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
+    public ObservableCollection<IncomeOutcome> outcomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
+    private readonly DatabaseService dbService;
+    string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
 	public MainPage()
 	{
 		InitializeComponent();
-        generalData = excelService.ReadLatestData(filePath, "General");
-        incomeData = excelService.ReadLatestData(filePath, "Income");
-        outcomeData = excelService.ReadLatestData(filePath, "Outcome");
-		BindingContext = this;
+		dbService = new DatabaseService(databasePath);
+    	LoadData();
+    	BindingContext = this;
 	}
 
 	private void AddIncomeClicked(object sender, EventArgs e)
@@ -31,20 +29,19 @@ public partial class MainPage : ContentPage
 
 	private async void OnGeneralItemSelected(object sender, SelectionChangedEventArgs e)
 	{
-		if (e.CurrentSelection.FirstOrDefault() is inoutcomeData selectedItem)
+		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
 			Popup popup;
-			// Mở popup và truyền dữ liệu hàng được chọn vào
 			if (selectedItem.Type == "Income") 
 			{
 				var incomePopup = new IncomePopup(this);
-				incomePopup.LoadIncomeDataForEdit(selectedItem); // Truyền dữ liệu vào Popup
+				incomePopup.LoadIncomeDataForEdit(selectedItem); 
 				popup = incomePopup;
 			}
 			else 
 			{
 				var outcomePopup = new  OutcomePopup(this);
-				outcomePopup.LoadOutcomeDataForEdit(selectedItem); // Truyền dữ liệu vào Popup
+				outcomePopup.LoadOutcomeDataForEdit(selectedItem);
 				popup = outcomePopup;
 			}
 			Application.Current.MainPage.ShowPopup(popup);
@@ -56,11 +53,9 @@ public partial class MainPage : ContentPage
 
 	private async void OnIncomeItemSelected(object sender, SelectionChangedEventArgs e)
 	{
-		if (e.CurrentSelection.FirstOrDefault() is inoutcomeData selectedItem)
+		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
 			var popup = new IncomePopup(this);
-			selectedItem.Type = "Income";
-			selectedItem.ID = selectedItem.ID + "_Income";
 			popup.LoadIncomeDataForEdit(selectedItem); 
 			Application.Current.MainPage.ShowPopup(popup);
 		}
@@ -69,37 +64,34 @@ public partial class MainPage : ContentPage
 
 	private async void OnOutcomeItemSelected(object sender, SelectionChangedEventArgs e)
 	{
-		if (e.CurrentSelection.FirstOrDefault() is inoutcomeData selectedItem)
+		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
 			var popup = new OutcomePopup(this);
-			selectedItem.Type = "Outcome";
-			selectedItem.ID = selectedItem.ID + "_Outcome";
 			popup.LoadOutcomeDataForEdit(selectedItem); 
 			Application.Current.MainPage.ShowPopup(popup);
 		}
 		((CollectionView)sender).SelectedItem = null;
 	}
 
-
 	public void LoadData()
 	{
 		generalData.Clear(); 
-		var latestGeneralData = excelService.ReadLatestData(filePath, "General");
-		foreach (var item in latestGeneralData)
+		var latestGeneralData = dbService.GetInoutcome();
+		for (int i = 0; i < Math.Min(latestGeneralData.Count, 5); i++)
 		{
-			generalData.Add(item);
+			generalData.Add(latestGeneralData[i]);
 		}
 		incomeData.Clear(); 
-		var latestIncomeData = excelService.ReadLatestData(filePath, "Income");
-		foreach (var item in latestIncomeData)
+		var latestIncomeData = dbService.GetInoutcome("Income");
+		for (int i = 0; i < Math.Min(latestIncomeData.Count, 5); i++)
 		{
-			incomeData.Add(item);
+			incomeData.Add(latestIncomeData[i]);
 		}
 		outcomeData.Clear(); 
-		var latestOutcomeData = excelService.ReadLatestData(filePath, "Outcome");
-		foreach (var item in latestOutcomeData)
+		var latestOutcomeData = dbService.GetInoutcome("Outcome");
+		for (int i = 0; i < Math.Min(latestOutcomeData.Count, 5); i++)
 		{
-			outcomeData.Add(item);
+			outcomeData.Add(latestOutcomeData[i]);
 		}
 	}
 	private void ShowCollectionView(int index)

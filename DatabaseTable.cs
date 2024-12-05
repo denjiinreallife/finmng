@@ -11,6 +11,6 @@ public class IncomeOutcome
     [MaxLength(100)]
     public string       Note { get; set; }
     [MaxLength(50)]
-    public string       Date { get; set; }
+    public DateTime     Date { get; set; }
 }
 
