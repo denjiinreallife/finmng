@@ -6,43 +6,57 @@ public partial class MainPage : ContentPage
     public ObservableCollection<IncomeOutcome> generalData { get; set; } = new ObservableCollection<IncomeOutcome>();
     public ObservableCollection<IncomeOutcome> incomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
     public ObservableCollection<IncomeOutcome> outcomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
-    private readonly DatabaseService dbService;
+    public double totalInoutcome = 0;
+	public double totalIncome = 0;
+	public double totalOutcome = 0;
+	private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
 	public MainPage()
 	{
 		InitializeComponent();
 		dbService = new DatabaseService(databasePath);
-    	LoadData();
-    	BindingContext = this;
+        BindingContext = new MainViewModel();
 	}
 
 	private void AddIncomeClicked(object sender, EventArgs e)
 	{
-        var popup = new IncomePopup(this); 
-        this.ShowPopup(popup);  
+		if (BindingContext is MainViewModel mainViewModel)
+    	{
+			var popup = new IncomePopup(mainViewModel); 
+			this.ShowPopup(popup);  
+		}
 	}
 	private void AddOutcomeClicked(object sender, EventArgs e)
 	{
-        var popup = new OutcomePopup(this); 
-        this.ShowPopup(popup);    
+		if (BindingContext is MainViewModel mainViewModel)
+    	{
+        	var popup = new OutcomePopup(mainViewModel); 
+        	this.ShowPopup(popup);    
+		}
 	}
 
 	private async void OnGeneralItemSelected(object sender, SelectionChangedEventArgs e)
 	{
 		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			Popup popup;
+			Popup popup = null;
 			if (selectedItem.Type == "Income") 
 			{
-				var incomePopup = new IncomePopup(this);
-				incomePopup.LoadIncomeDataForEdit(selectedItem); 
-				popup = incomePopup;
+				if (BindingContext is MainViewModel mainViewModel)
+				{
+					var incomePopup = new IncomePopup(mainViewModel);
+					incomePopup.LoadIncomeDataForEdit(selectedItem); 
+					popup = incomePopup;
+				}
 			}
 			else 
 			{
-				var outcomePopup = new  OutcomePopup(this);
-				outcomePopup.LoadOutcomeDataForEdit(selectedItem);
-				popup = outcomePopup;
+				if (BindingContext is MainViewModel mainViewModel)
+				{
+					var outcomePopup = new OutcomePopup(mainViewModel);
+					outcomePopup.LoadOutcomeDataForEdit(selectedItem);
+					popup = outcomePopup;
+				}
 			}
 			Application.Current.MainPage.ShowPopup(popup);
 		}
@@ -55,9 +69,12 @@ public partial class MainPage : ContentPage
 	{
 		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			var popup = new IncomePopup(this);
-			popup.LoadIncomeDataForEdit(selectedItem); 
-			Application.Current.MainPage.ShowPopup(popup);
+			if (BindingContext is MainViewModel mainViewModel)
+			{
+				var popup = new IncomePopup(mainViewModel);
+				popup.LoadIncomeDataForEdit(selectedItem); 
+				Application.Current.MainPage.ShowPopup(popup);
+			}
 		}
 		((CollectionView)sender).SelectedItem = null;
 	}
@@ -66,39 +83,24 @@ public partial class MainPage : ContentPage
 	{
 		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			var popup = new OutcomePopup(this);
-			popup.LoadOutcomeDataForEdit(selectedItem); 
-			Application.Current.MainPage.ShowPopup(popup);
+			if (BindingContext is MainViewModel mainViewModel)
+			{
+				var popup = new OutcomePopup(mainViewModel);
+				popup.LoadOutcomeDataForEdit(selectedItem); 
+				Application.Current.MainPage.ShowPopup(popup);
+			}
 		}
 		((CollectionView)sender).SelectedItem = null;
-	}
-
-	public void LoadData()
-	{
-		generalData.Clear(); 
-		var latestGeneralData = dbService.GetInoutcome();
-		for (int i = 0; i < Math.Min(latestGeneralData.Count, 5); i++)
-		{
-			generalData.Add(latestGeneralData[i]);
-		}
-		incomeData.Clear(); 
-		var latestIncomeData = dbService.GetInoutcome("Income");
-		for (int i = 0; i < Math.Min(latestIncomeData.Count, 5); i++)
-		{
-			incomeData.Add(latestIncomeData[i]);
-		}
-		outcomeData.Clear(); 
-		var latestOutcomeData = dbService.GetInoutcome("Outcome");
-		for (int i = 0; i < Math.Min(latestOutcomeData.Count, 5); i++)
-		{
-			outcomeData.Add(latestOutcomeData[i]);
-		}
 	}
 	private void ShowCollectionView(int index)
 	{
 		GeneralCollectionView.IsVisible = index == 1;
+		TotalShow.IsVisible = index == 1;
 		IncomeCollectionView.IsVisible = index == 2;
+		IncomeShow.IsVisible = index == 2;
 		OutcomeCollectionView.IsVisible = index == 3;
+		OutcomeShow.IsVisible = index == 3;
+		
 	}
 	private void ShowGeneralList(object sender, EventArgs e)
 	{
@@ -139,11 +141,14 @@ public partial class MainPage : ContentPage
 		IncomeShowBtn.HasShadow = true;
 		ShowCollectionView(3);
 	}
+	
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		LoadData(); // Tải lại dữ liệu từ Excel và đồng bộ với giao diện
+		if (BindingContext is MainViewModel viewModel)
+		{
+			viewModel.LoadData(); // Gọi phương thức LoadData
+		}
 	}
-
 }
 

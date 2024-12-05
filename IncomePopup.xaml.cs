@@ -5,18 +5,19 @@ namespace FinancialManagement;
 
 public partial class IncomePopup : Popup
 {
-    private MainPage _mainPage;
+    private MainViewModel _mainPage;
     public bool IsEditing { get; set; } = false; 
     public IncomeOutcome EditingData { get; set; } 
     string[] readyCategories = { "Salary", "Debt", "Interest rate", "Freelance jobs" };
     private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
-    public IncomePopup(MainPage mainPage)
+    public IncomePopup(MainViewModel mainPage)
     {
         InitializeComponent();
         dbService = new DatabaseService(databasePath);
         _mainPage = mainPage; // Lưu tham chiếu đến MainPage
         IncomeCategory.SelectedIndex = 0;
+        IncomeTime.Time = DateTime.Now.TimeOfDay;
     }
 
     private async void OnIncomeSubmitClicked(object sender, EventArgs e)
@@ -70,7 +71,8 @@ public partial class IncomePopup : Popup
                     Type = "Income",
                     Category = category,
                     Date = date,
-                    Note = note
+                    Note = note,
+                    Timestamp = DateTime.Now
                 }
             );
         }
@@ -83,12 +85,16 @@ public partial class IncomePopup : Popup
                     Type = "Income",
                     Category = category,
                     Date = date,
-                    Note = note
+                    Note = note,
+                    Timestamp = DateTime.Now
                 }
             );
         }
 
-        _mainPage.LoadData(); 
+		if (_mainPage is MainViewModel viewModel)
+		{
+			viewModel.LoadData(); // Gọi phương thức LoadData
+		}
 
         Close();
     }

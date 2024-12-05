@@ -5,17 +5,17 @@ namespace FinancialManagement;
 
 public partial class OutcomePopup : Popup
 {
-    private MainPage _mainPage;
+    private MainViewModel _mainPage;
     public bool IsEditing { get; set; } = false; 
     public IncomeOutcome EditingData { get; set; } 
     string[] readyCategories = { "Debt" };
     private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
-    public OutcomePopup(MainPage mainPage)
+    public OutcomePopup(MainViewModel mainPage)
     {
         InitializeComponent();
         dbService = new DatabaseService(databasePath);
-        _mainPage = mainPage; // Lưu tham chiếu đến MainPage
+        _mainPage = mainPage;
         OutcomeCategory.SelectedIndex = 0;
     }
 
@@ -69,7 +69,8 @@ public partial class OutcomePopup : Popup
                     Type = "Outcome",
                     Category = category,
                     Date = date,
-                    Note = note
+                    Note = note,
+                    Timestamp = DateTime.Now
                 }
             );
         }
@@ -82,12 +83,16 @@ public partial class OutcomePopup : Popup
                     Type = "Outcome",
                     Category = category,
                     Date = date,
-                    Note = note
+                    Note = note,
+                    Timestamp = DateTime.Now
                 }
             );
         }
 
-        _mainPage.LoadData();
+		if (_mainPage is MainViewModel viewModel)
+		{
+			viewModel.LoadData(); 
+		}
 
         Close();
     }

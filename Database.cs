@@ -12,5 +12,18 @@ public class IncomeOutcome
     public string       Note { get; set; }
     [MaxLength(50)]
     public DateTime     Date { get; set; }
+    public DateTime     Timestamp { get; set; }
+}
+
+
+
+// for future
+public class Account
+{
+    [PrimaryKey, AutoIncrement]
+    public int          Id { get; set; }
+    public string       Username { get; set; }
+    public string       Password { get; set; }
+    public string       Email { get; set; }
 }
 
