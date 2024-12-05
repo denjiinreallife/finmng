@@ -1,17 +1,25 @@
 # finmng
-## Target behavior
+## Target
 - [ ] Homepage
-- [ ] Add income
-- [ ] Add outcome
-- [ ] Save and show income/outcome
+  - [ ] Current finance
+  - [ ] Income/Outcome
+  - [ ] Show income/outcome
+  - [ ] Data Visualization
+- [ ] Current finance
+  - [ ] Total normal
+  - [ ] Pots divide
+- [ ] Income/Outcome
+  - [ ] Add
+  - [ ] Edit
+  - [ ] Delete
+- [ ] Show income/outcome
+  - [ ] Only income
+  - [ ] Only outcome
+  - [ ] Both
 - [ ] Data Visualization
-- [ ] Import file
-- [ ] Export file
-- [ ] Multi-unit
-- [ ] Multi-language
-- [ ] Multi-theme
-## Current focus
+- [ ] Import/Export
+## Ongoing
 - [ ] Homepage
-- [ ] Add income
-- [ ] Add outcome
-- [ ] Save and show income/outcome
+  - [ ] Current finance
+  - [ ] Data Visualization
+- [ ] Use another databse instead of Excel
