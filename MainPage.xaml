@@ -11,6 +11,65 @@
                 Source="dotnet_bot.png"
                 HeightRequest="185"
                 Aspect="AspectFit" />
+            <Grid>
+                <Frame x:Name="TotalShow"
+                    Padding="10" 
+                    BackgroundColor="#6200EE" 
+                    CornerRadius="15" 
+                    HorizontalOptions="Center"
+                    IsVisible="True">
+                    <StackLayout>
+                        <Label Text="Total" 
+                            FontSize="20" 
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center" 
+                            TextColor="White" />
+                        <Label Text="{Binding totalGeneral, StringFormat='{}{0:N0} VNĐ'}" 
+                            FontSize="25" 
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center" 
+                            TextColor="White" />
+                    </StackLayout>
+                </Frame>
+                <Frame x:Name="IncomeShow"
+                    Padding="10" 
+                    BackgroundColor="#6200EE" 
+                    CornerRadius="15" 
+                    HorizontalOptions="Center"
+                    IsVisible="False">
+                    <StackLayout>
+                        <Label Text="Income" 
+                            FontSize="20" 
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center" 
+                            TextColor="White" />
+                        <Label Text="{Binding totalIncome, StringFormat='{}{0:N0} VNĐ'}" 
+                            FontSize="25" 
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center" 
+                            TextColor="White" />
+                    </StackLayout>
+                </Frame>
+                <Frame x:Name="OutcomeShow"
+                    Padding="10" 
+                    BackgroundColor="#6200EE" 
+                    CornerRadius="15" 
+                    HorizontalOptions="Center"
+                    IsVisible="False">
+                    <StackLayout>
+                        <Label Text="Outcome" 
+                            FontSize="20" 
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center" 
+                            TextColor="White" />
+                        <Label Text="{Binding totalOutcome, StringFormat='{}{0:N0} VNĐ'}" 
+                            FontSize="25" 
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center" 
+                            TextColor="White" />
+                    </StackLayout>
+                </Frame>
+            </Grid>
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="50">
                 <Button
                     x:Name="IncomeBtn"

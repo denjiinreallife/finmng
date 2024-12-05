@@ -5,16 +5,17 @@ namespace FinancialManagement;
 
 public partial class OutcomePopup : Popup
 {
-    private MainPage _mainPage;
+    private MainViewModel _mainPage;
     public bool IsEditing { get; set; } = false; 
-    public inoutcomeData EditingData { get; set; } 
+    public IncomeOutcome EditingData { get; set; } 
     string[] readyCategories = { "Debt" };
-    string filePath = Path.Combine(AppContext.BaseDirectory, "Data", "Test.xlsx");
-    ExcelService excelService = new ExcelService();
-    public OutcomePopup(MainPage mainPage)
+    private readonly DatabaseService dbService;
+    string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
+    public OutcomePopup(MainViewModel mainPage)
     {
         InitializeComponent();
-        _mainPage = mainPage; // Lưu tham chiếu đến MainPage
+        dbService = new DatabaseService(databasePath);
+        _mainPage = mainPage;
         OutcomeCategory.SelectedIndex = 0;
     }
 
@@ -61,25 +62,38 @@ public partial class OutcomePopup : Popup
         Application.Current.MainPage.DisplayAlert("Outcome infomation", $"Outcome: {value}\nCategory: {category}\nDate: {date:dd/MM/yyyy}\nNote: {note}", "OK");
         if (IsEditing)
         {
-            int rowIndexGeneral = excelService.FindRowIndex(filePath, "General", "ID", EditingData.ID); 
-            if (rowIndexGeneral != -1)
-            {
-                excelService.UpdateEntry(filePath, "General", rowIndexGeneral, date, category, value, note);
-                string[] IDParts = EditingData.ID.Split('_');
-                int rowIndexInoutcome = excelService.FindRowIndex(filePath, EditingData.Type, "ID", IDParts[0]); 
-                excelService.UpdateEntry(filePath, EditingData.Type, rowIndexInoutcome, date, category, value, note);
-                _mainPage.LoadData(); 
-            }
-            else
-            {
-                await Application.Current.MainPage.DisplayAlert("Error", "Unable to find entry to update", "OK");
-            }
+            dbService.UpdateInoutcome(
+                new IncomeOutcome
+                {
+                    Value = value,
+                    Type = "Outcome",
+                    Category = category,
+                    Date = date,
+                    Note = note,
+                    Timestamp = DateTime.Now
+                }
+            );
         }
         else
         {
-            await excelService.SaveToExcel(false, date, category, value, note);
-            _mainPage.LoadData();
+            dbService.AddInoutcome(
+                new IncomeOutcome
+                {
+                    Value = value,
+                    Type = "Outcome",
+                    Category = category,
+                    Date = date,
+                    Note = note,
+                    Timestamp = DateTime.Now
+                }
+            );
         }
+
+		if (_mainPage is MainViewModel viewModel)
+		{
+			viewModel.LoadData(); 
+		}
+
         Close();
     }
     private void OnOutcomeCategoryChanged(object sender, EventArgs e)
@@ -98,13 +112,13 @@ public partial class OutcomePopup : Popup
         }
     }
 
-    public void LoadOutcomeDataForEdit(inoutcomeData data)
+    public void LoadOutcomeDataForEdit(IncomeOutcome data)
     {
         IsEditing = true;
         OutcomeDeleteBtn.IsVisible = true; 
         EditingData = data;
 
-        OutcomeValue.Text = data.Value.ToString(); // Gán giá trị cho ô nhập số tiền
+        OutcomeValue.Text = data.Value.ToString(); 
 
         if (readyCategories.Contains(data.Category))
         {
@@ -117,13 +131,13 @@ public partial class OutcomePopup : Popup
             OutcomeCustomCategory.IsVisible = true;
             OutcomeCustomCategory.Text = data.Category;
         }
-        OutcomeDate.Date = data.Date; // Gán giá trị ngày tháng
-        OutcomeNote.Text = data.Note == "None" ? "" : data.Note; // Gán giá trị cho Note (dựa vào Type nếu phù hợp)
+        OutcomeDate.Date = data.Date; 
+        OutcomeNote.Text = data.Note == "None" ? "" : data.Note; 
     }
 
     private void OnOutcomeCloseClicked(object sender, EventArgs e)
     {
-        Close(); // Đóng popup
+        Close(); 
     }
     private async void OnOutcomeDeleteClicked(object sender, EventArgs e)
     {
@@ -133,9 +147,7 @@ public partial class OutcomePopup : Popup
             return;
         }
 
-        excelService.DeleteItemFromExcel(filePath, EditingData);
-
-        await Application.Current.MainPage.DisplayAlert("Success", "Item deleted successfully.", "OK");
+        dbService.DeleteInoutcome(EditingData.Id);
 
         _mainPage.LoadData();
 

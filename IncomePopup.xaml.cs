@@ -1,22 +1,23 @@
 using CommunityToolkit.Maui.Views;
 using System.Text.RegularExpressions;
 
-
 namespace FinancialManagement;
 
 public partial class IncomePopup : Popup
 {
-    private MainPage _mainPage;
+    private MainViewModel _mainPage;
     public bool IsEditing { get; set; } = false; 
-    public inoutcomeData EditingData { get; set; } 
+    public IncomeOutcome EditingData { get; set; } 
     string[] readyCategories = { "Salary", "Debt", "Interest rate", "Freelance jobs" };
-    string filePath = Path.Combine(AppContext.BaseDirectory, "Data", "Test.xlsx");
-    ExcelService excelService = new ExcelService();
-    public IncomePopup(MainPage mainPage)
+    private readonly DatabaseService dbService;
+    string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
+    public IncomePopup(MainViewModel mainPage)
     {
         InitializeComponent();
+        dbService = new DatabaseService(databasePath);
         _mainPage = mainPage; // Lưu tham chiếu đến MainPage
         IncomeCategory.SelectedIndex = 0;
+        IncomeTime.Time = DateTime.Now.TimeOfDay;
     }
 
     private async void OnIncomeSubmitClicked(object sender, EventArgs e)
@@ -62,25 +63,38 @@ public partial class IncomePopup : Popup
 
         if (IsEditing)
         {
-            int rowIndexGeneral = excelService.FindRowIndex(filePath, "General", "ID", EditingData.ID); 
-            if (rowIndexGeneral != -1)
-            {
-                excelService.UpdateEntry(filePath, "General", rowIndexGeneral, date, category, value, note);
-                string[] IDParts = EditingData.ID.Split('_');
-                int rowIndexInoutcome = excelService.FindRowIndex(filePath, EditingData.Type, "ID", IDParts[0]); 
-                excelService.UpdateEntry(filePath, EditingData.Type, rowIndexInoutcome, date, category, value, note);
-                _mainPage.LoadData(); 
-            }
-            else
-            {
-                await Application.Current.MainPage.DisplayAlert("Error", "Unable to find entry to update", "OK");
-            }
+            dbService.UpdateInoutcome(
+                new IncomeOutcome
+                {
+                    Id = EditingData.Id,
+                    Value = value,
+                    Type = "Income",
+                    Category = category,
+                    Date = date,
+                    Note = note,
+                    Timestamp = DateTime.Now
+                }
+            );
         }
         else
         {
-            await excelService.SaveToExcel(true, date, category, value, note);
-            _mainPage.LoadData(); 
+            dbService.AddInoutcome(
+                new IncomeOutcome
+                {
+                    Value = value,
+                    Type = "Income",
+                    Category = category,
+                    Date = date,
+                    Note = note,
+                    Timestamp = DateTime.Now
+                }
+            );
         }
+
+		if (_mainPage is MainViewModel viewModel)
+		{
+			viewModel.LoadData(); // Gọi phương thức LoadData
+		}
 
         Close();
     }
@@ -101,7 +115,7 @@ public partial class IncomePopup : Popup
         }
     }
 
-    public void LoadIncomeDataForEdit(inoutcomeData data)
+    public void LoadIncomeDataForEdit(IncomeOutcome data)
     {
         IsEditing = true;
         IncomeDeleteBtn.IsVisible = true; 
@@ -127,7 +141,7 @@ public partial class IncomePopup : Popup
 
     private void OnIncomeCloseClicked(object sender, EventArgs e)
     {
-        Close(); // Đóng popup
+        Close();
     }
     private async void OnIncomeDeleteClicked(object sender, EventArgs e)
     {
@@ -137,9 +151,7 @@ public partial class IncomePopup : Popup
             return;
         }
 
-        excelService.DeleteItemFromExcel(filePath, EditingData);
-
-        await Application.Current.MainPage.DisplayAlert("Success", "Item deleted successfully.", "OK");
+        dbService.DeleteInoutcome(EditingData.Id);
 
         _mainPage.LoadData();
 

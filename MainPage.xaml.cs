@@ -3,49 +3,60 @@ using System.Collections.ObjectModel;
 namespace FinancialManagement;
 public partial class MainPage : ContentPage
 {
-    public ObservableCollection<inoutcomeData> generalData { get; set; } = new ObservableCollection<inoutcomeData>();
-    public ObservableCollection<inoutcomeData> incomeData { get; set; } = new ObservableCollection<inoutcomeData>();
-    public ObservableCollection<inoutcomeData> outcomeData { get; set; } = new ObservableCollection<inoutcomeData>();
-
-    string filePath = Path.Combine(AppContext.BaseDirectory, "Data", "Test.xlsx");
-    ExcelService excelService = new ExcelService();
+    public ObservableCollection<IncomeOutcome> generalData { get; set; } = new ObservableCollection<IncomeOutcome>();
+    public ObservableCollection<IncomeOutcome> incomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
+    public ObservableCollection<IncomeOutcome> outcomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
+    public double totalInoutcome = 0;
+	public double totalIncome = 0;
+	public double totalOutcome = 0;
+	private readonly DatabaseService dbService;
+    string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
 	public MainPage()
 	{
 		InitializeComponent();
-        generalData = excelService.ReadLatestData(filePath, "General");
-        incomeData = excelService.ReadLatestData(filePath, "Income");
-        outcomeData = excelService.ReadLatestData(filePath, "Outcome");
-		BindingContext = this;
+		dbService = new DatabaseService(databasePath);
+        BindingContext = new MainViewModel();
 	}
 
 	private void AddIncomeClicked(object sender, EventArgs e)
 	{
-        var popup = new IncomePopup(this); 
-        this.ShowPopup(popup);  
+		if (BindingContext is MainViewModel mainViewModel)
+    	{
+			var popup = new IncomePopup(mainViewModel); 
+			this.ShowPopup(popup);  
+		}
 	}
 	private void AddOutcomeClicked(object sender, EventArgs e)
 	{
-        var popup = new OutcomePopup(this); 
-        this.ShowPopup(popup);    
+		if (BindingContext is MainViewModel mainViewModel)
+    	{
+        	var popup = new OutcomePopup(mainViewModel); 
+        	this.ShowPopup(popup);    
+		}
 	}
 
 	private async void OnGeneralItemSelected(object sender, SelectionChangedEventArgs e)
 	{
-		if (e.CurrentSelection.FirstOrDefault() is inoutcomeData selectedItem)
+		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			Popup popup;
-			// Mở popup và truyền dữ liệu hàng được chọn vào
+			Popup popup = null;
 			if (selectedItem.Type == "Income") 
 			{
-				var incomePopup = new IncomePopup(this);
-				incomePopup.LoadIncomeDataForEdit(selectedItem); // Truyền dữ liệu vào Popup
-				popup = incomePopup;
+				if (BindingContext is MainViewModel mainViewModel)
+				{
+					var incomePopup = new IncomePopup(mainViewModel);
+					incomePopup.LoadIncomeDataForEdit(selectedItem); 
+					popup = incomePopup;
+				}
 			}
 			else 
 			{
-				var outcomePopup = new  OutcomePopup(this);
-				outcomePopup.LoadOutcomeDataForEdit(selectedItem); // Truyền dữ liệu vào Popup
-				popup = outcomePopup;
+				if (BindingContext is MainViewModel mainViewModel)
+				{
+					var outcomePopup = new OutcomePopup(mainViewModel);
+					outcomePopup.LoadOutcomeDataForEdit(selectedItem);
+					popup = outcomePopup;
+				}
 			}
 			Application.Current.MainPage.ShowPopup(popup);
 		}
@@ -56,57 +67,40 @@ public partial class MainPage : ContentPage
 
 	private async void OnIncomeItemSelected(object sender, SelectionChangedEventArgs e)
 	{
-		if (e.CurrentSelection.FirstOrDefault() is inoutcomeData selectedItem)
+		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			var popup = new IncomePopup(this);
-			selectedItem.Type = "Income";
-			selectedItem.ID = selectedItem.ID + "_Income";
-			popup.LoadIncomeDataForEdit(selectedItem); 
-			Application.Current.MainPage.ShowPopup(popup);
+			if (BindingContext is MainViewModel mainViewModel)
+			{
+				var popup = new IncomePopup(mainViewModel);
+				popup.LoadIncomeDataForEdit(selectedItem); 
+				Application.Current.MainPage.ShowPopup(popup);
+			}
 		}
 		((CollectionView)sender).SelectedItem = null;
 	}
 
 	private async void OnOutcomeItemSelected(object sender, SelectionChangedEventArgs e)
 	{
-		if (e.CurrentSelection.FirstOrDefault() is inoutcomeData selectedItem)
+		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			var popup = new OutcomePopup(this);
-			selectedItem.Type = "Outcome";
-			selectedItem.ID = selectedItem.ID + "_Outcome";
-			popup.LoadOutcomeDataForEdit(selectedItem); 
-			Application.Current.MainPage.ShowPopup(popup);
+			if (BindingContext is MainViewModel mainViewModel)
+			{
+				var popup = new OutcomePopup(mainViewModel);
+				popup.LoadOutcomeDataForEdit(selectedItem); 
+				Application.Current.MainPage.ShowPopup(popup);
+			}
 		}
 		((CollectionView)sender).SelectedItem = null;
-	}
-
-
-	public void LoadData()
-	{
-		generalData.Clear(); 
-		var latestGeneralData = excelService.ReadLatestData(filePath, "General");
-		foreach (var item in latestGeneralData)
-		{
-			generalData.Add(item);
-		}
-		incomeData.Clear(); 
-		var latestIncomeData = excelService.ReadLatestData(filePath, "Income");
-		foreach (var item in latestIncomeData)
-		{
-			incomeData.Add(item);
-		}
-		outcomeData.Clear(); 
-		var latestOutcomeData = excelService.ReadLatestData(filePath, "Outcome");
-		foreach (var item in latestOutcomeData)
-		{
-			outcomeData.Add(item);
-		}
 	}
 	private void ShowCollectionView(int index)
 	{
 		GeneralCollectionView.IsVisible = index == 1;
+		TotalShow.IsVisible = index == 1;
 		IncomeCollectionView.IsVisible = index == 2;
+		IncomeShow.IsVisible = index == 2;
 		OutcomeCollectionView.IsVisible = index == 3;
+		OutcomeShow.IsVisible = index == 3;
+		
 	}
 	private void ShowGeneralList(object sender, EventArgs e)
 	{
@@ -147,11 +141,14 @@ public partial class MainPage : ContentPage
 		IncomeShowBtn.HasShadow = true;
 		ShowCollectionView(3);
 	}
+	
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		LoadData(); // Tải lại dữ liệu từ Excel và đồng bộ với giao diện
+		if (BindingContext is MainViewModel viewModel)
+		{
+			viewModel.LoadData(); // Gọi phương thức LoadData
+		}
 	}
-
 }
 
