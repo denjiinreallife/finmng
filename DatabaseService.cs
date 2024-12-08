@@ -10,6 +10,7 @@ public class DatabaseService
         var result = _database.ExecuteScalar<string>(query);
         return !string.IsNullOrEmpty(result);
     }
+
     public DatabaseService(string dbPath)
     {
         string dataFolder = Path.GetDirectoryName(dbPath);
@@ -22,8 +23,27 @@ public class DatabaseService
         {
             _database.CreateTable<IncomeOutcome>();
         }
+        if (!TableExists("IncomeCategories"))
+        {
+            _database.CreateTable<IncomeCategories>();
+            _database.Insert(new IncomeCategories { ICategories = "Add new income category" });
+        }
+        if (!TableExists("OutcomeCategories"))
+        {
+            _database.CreateTable<OutcomeCategories>();
+            _database.Insert(new OutcomeCategories { OCategories = "Add new outcome category" });
+        }
+    }
+    
+    public async Task DeleteDatabaseAsync(string dbPath)
+    {
+        if (File.Exists(dbPath))
+        {
+            File.Delete(dbPath);
+        }
     }
 
+    /******************* IncomeOutcome TABLE FUNCTION START *******************/
     public List<IncomeOutcome> GetInoutcome(string? type = null)
     {
         var query = _database.Table<IncomeOutcome>().AsQueryable();
@@ -65,4 +85,51 @@ public class DatabaseService
         
         return totalIncome - totalOutcome;
     }
+    /******************* IncomeOutcome TABLE FUNCTION END *******************/
+
+    /******************* IncomeCategories TABLE FUNCTION START *******************/
+    public List<IncomeCategories> GetIncomeCategories()
+    {
+        var query = _database.Table<IncomeCategories>().AsQueryable();
+        return query.OrderByDescending(x => x.Id).ToList();
+    }
+
+    public int AddIncomeCategory(IncomeCategories Data)
+    {
+        return _database.Insert(Data);
+    }
+
+    public int DeleteIncomeCategory(string category)
+    {
+        return _database.Delete<IncomeCategories>(category);
+    }
+
+    public int UpdateIncomeCategories(IncomeCategories Data)
+    {
+        return _database.Update(Data);
+    }
+    /******************* IncomeCategories TABLE FUNCTION END *******************/
+
+    /******************* OutcomeCategories TABLE FUNCTION START *******************/
+    public List<OutcomeCategories> GetOutcomeCategories()
+    {
+        var query = _database.Table<OutcomeCategories>().AsQueryable();
+        return query.OrderByDescending(x => x.Id).ToList();
+    }
+
+    public int AddOutcomeCategory(OutcomeCategories Data)
+    {
+        return _database.Insert(Data);
+    }
+
+    public int DeleteOutcomeCategory(string category)
+    {
+        return _database.Delete<OutcomeCategories>(category);
+    }
+
+    public int UpdateOutcomeCategories(OutcomeCategories Data)
+    {
+        return _database.Update(Data);
+    }
+    /******************* IncomeCategories TABLE FUNCTION END *******************/
 }

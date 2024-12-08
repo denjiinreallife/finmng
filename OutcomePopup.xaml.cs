@@ -5,10 +5,10 @@ namespace FinancialManagement;
 
 public partial class OutcomePopup : Popup
 {
+    private OutcomeViewModel ViewModel => BindingContext as OutcomeViewModel;
     private MainViewModel _mainPage;
     public bool IsEditing { get; set; } = false; 
     public IncomeOutcome EditingData { get; set; } 
-    string[] readyCategories = { "Debt" };
     private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
     public OutcomePopup(MainViewModel mainPage)
@@ -16,23 +16,32 @@ public partial class OutcomePopup : Popup
         InitializeComponent();
         dbService = new DatabaseService(databasePath);
         _mainPage = mainPage;
+        OutcomeTime.Time = DateTime.Now.TimeOfDay;
         OutcomeCategory.SelectedIndex = 0;
+        BindingContext = new OutcomeViewModel();
     }
 
     private async void OnOutcomeSubmitClicked(object sender, EventArgs e)
     {
         string value_text = OutcomeValue.Text;
         string note = OutcomeNote.Text;
+        var selectedCategory = OutcomeCategory.SelectedItem as OutcomeCategories;
         string category;
         DateTime date = OutcomeDate.Date;
 
-        if (OutcomeCustomCategory.IsVisible)
+        if (ViewModel.IsNewOutcomeCategory)
         {
-            category = OutcomeCustomCategory.Text;
+            category = NewOutcomeCategory.Text;
+            dbService.AddOutcomeCategory(
+                new OutcomeCategories
+                { 
+                    OCategories = category
+                }
+            );
         }
         else
         {
-            category = OutcomeCategory.SelectedItem as string;
+            category = selectedCategory.OCategories as string;
         }
 
         if (string.IsNullOrWhiteSpace(note))
@@ -65,6 +74,7 @@ public partial class OutcomePopup : Popup
             dbService.UpdateInoutcome(
                 new IncomeOutcome
                 {
+                    Id = EditingData.Id,
                     Value = value,
                     Type = "Outcome",
                     Category = category,
@@ -99,16 +109,15 @@ public partial class OutcomePopup : Popup
     private void OnOutcomeCategoryChanged(object sender, EventArgs e)
     {
         var picker = (Picker)sender;
-        var selectedValue = picker.SelectedItem as string;
+        var selectedValue = picker.SelectedItem as OutcomeCategories;
 
-        if (selectedValue == "Other")
+        if (selectedValue.OCategories == "Add new outcome category")
         {
-            OutcomeCustomCategory.IsVisible = true; 
+            ViewModel.IsNewOutcomeCategory = true; 
         }
         else
         {
-            OutcomeCustomCategory.IsVisible = false; 
-            var selectedCategory = selectedValue;
+            ViewModel.IsNewOutcomeCategory = false; 
         }
     }
 
@@ -117,19 +126,13 @@ public partial class OutcomePopup : Popup
         IsEditing = true;
         OutcomeDeleteBtn.IsVisible = true; 
         EditingData = data;
-
         OutcomeValue.Text = data.Value.ToString(); 
-
-        if (readyCategories.Contains(data.Category))
+        var category = OutcomeCategory.ItemsSource
+        .Cast<OutcomeCategories>()
+        .FirstOrDefault(c => c.OCategories == data.Category);
+        if (category != null)
         {
-            OutcomeCategory.SelectedItem = data.Category;
-            OutcomeCustomCategory.IsVisible = false;
-        }
-        else
-        {
-            OutcomeCategory.SelectedItem = "Other";
-            OutcomeCustomCategory.IsVisible = true;
-            OutcomeCustomCategory.Text = data.Category;
+            OutcomeCategory.SelectedItem = category; // Gán đúng đối tượng
         }
         OutcomeDate.Date = data.Date; 
         OutcomeNote.Text = data.Note == "None" ? "" : data.Note; 

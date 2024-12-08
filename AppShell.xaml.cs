@@ -2,9 +2,12 @@
 
 public partial class AppShell : Shell
 {
+	private readonly DatabaseService dbService;
+    string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
 	public AppShell()
 	{
 		InitializeComponent();
+		dbService = new DatabaseService(databasePath);
 	}
 
 	private void OnDataImport(object sender, EventArgs e)
@@ -30,6 +33,11 @@ public partial class AppShell : Shell
 	private void UseEnglish(object sender, EventArgs e)
 	{
 		// 
+	}
+	private void Delete(object sender, EventArgs e)
+	{
+		// 
+		// await dbService.DeleteDatabaseAsync(databasePath);
 	}
 
 

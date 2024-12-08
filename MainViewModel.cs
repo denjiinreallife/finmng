@@ -46,7 +46,6 @@ public class MainViewModel : INotifyPropertyChanged
     {
 		dbService = new DatabaseService(databasePath);
     	LoadData();
-        // totalInoutcome = 1000.0; // Giá trị mẫu
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

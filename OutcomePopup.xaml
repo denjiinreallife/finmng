@@ -18,23 +18,23 @@
         <Entry Placeholder="Unit VND" Keyboard="Numeric" x:Name="OutcomeValue" />
 
         <Label Text="Category" FontSize="16" />
-        <Picker x:Name="OutcomeCategory" SelectedIndex="0" SelectedIndexChanged="OnOutcomeCategoryChanged">
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                    <x:String>Choose outcome category</x:String>
-                    <x:String>Debt</x:String>
-                    <x:String>Other</x:String>
-                </x:Array>
-            </Picker.ItemsSource>
+        <Picker x:Name="OutcomeCategory" 
+                Title="Choose outcome category"
+                ItemsSource="{Binding OutcomeCategories}"
+                ItemDisplayBinding="{Binding OCategories}"
+                SelectedIndexChanged="OnOutcomeCategoryChanged">
         </Picker>
 
-        <Entry x:Name="OutcomeCustomCategory"
-           Placeholder="Enter custom category..."
-           IsVisible="False" />
+        <Entry x:Name="NewOutcomeCategory"
+           Placeholder="Enter new category..."
+           IsVisible="{Binding IsNewOutcomeCategory}" />
 
         <Label Text="Date" FontSize="16" />
         <DatePicker x:Name="OutcomeDate"
                     Format="dd/MM/yyyy"/>
+        <Label Text="Time" FontSize="16" />
+        <TimePicker x:Name="OutcomeTime"
+                    Format="HH:mm"/>
 
         <Label Text="Note" FontSize="16" />
         <Entry Placeholder="Anynote" x:Name="OutcomeNote" />

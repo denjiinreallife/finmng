@@ -5,35 +5,43 @@ namespace FinancialManagement;
 
 public partial class IncomePopup : Popup
 {
+    private IncomeViewModel ViewModel => BindingContext as IncomeViewModel;
     private MainViewModel _mainPage;
     public bool IsEditing { get; set; } = false; 
     public IncomeOutcome EditingData { get; set; } 
-    string[] readyCategories = { "Salary", "Debt", "Interest rate", "Freelance jobs" };
     private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
     public IncomePopup(MainViewModel mainPage)
     {
         InitializeComponent();
         dbService = new DatabaseService(databasePath);
-        _mainPage = mainPage; // Lưu tham chiếu đến MainPage
-        IncomeCategory.SelectedIndex = 0;
+        _mainPage = mainPage;
         IncomeTime.Time = DateTime.Now.TimeOfDay;
+        IncomeCategory.SelectedIndex = 0;
+        BindingContext = new IncomeViewModel();
     }
 
     private async void OnIncomeSubmitClicked(object sender, EventArgs e)
     {
         string value_text = IncomeValue.Text;
         string note = IncomeNote.Text;
+        var selectedCategory = IncomeCategory.SelectedItem as IncomeCategories;
         string category;
         DateTime date = IncomeDate.Date;
 
-        if (IncomeCustomCategory.IsVisible)
+        if (ViewModel.IsNewIncomeCategory)
         {
-            category = IncomeCustomCategory.Text;
+            category = NewIncomeCategory.Text;
+            dbService.AddIncomeCategory(
+                new IncomeCategories
+                { 
+                    ICategories = category
+                }
+            );
         }
         else
         {
-            category = IncomeCategory.SelectedItem as string;
+            category = selectedCategory.ICategories as string;
         }
 
         if (string.IsNullOrWhiteSpace(note))
@@ -93,7 +101,7 @@ public partial class IncomePopup : Popup
 
 		if (_mainPage is MainViewModel viewModel)
 		{
-			viewModel.LoadData(); // Gọi phương thức LoadData
+			viewModel.LoadData();
 		}
 
         Close();
@@ -102,16 +110,15 @@ public partial class IncomePopup : Popup
     private void OnIncomeCategoryChanged(object sender, EventArgs e)
     {
         var picker = (Picker)sender;
-        var selectedValue = picker.SelectedItem as string;
+        var selectedValue = picker.SelectedItem as IncomeCategories;
 
-        if (selectedValue == "Other")
+        if (selectedValue.ICategories == "Add new income category")
         {
-            IncomeCustomCategory.IsVisible = true; 
+            ViewModel.IsNewIncomeCategory = true; 
         }
         else
         {
-            IncomeCustomCategory.IsVisible = false; 
-            var selectedCategory = selectedValue;
+            ViewModel.IsNewIncomeCategory = false; 
         }
     }
 
@@ -120,24 +127,17 @@ public partial class IncomePopup : Popup
         IsEditing = true;
         IncomeDeleteBtn.IsVisible = true; 
         EditingData = data;
-
         IncomeValue.Text = data.Value.ToString(); 
-
-        if (readyCategories.Contains(data.Category))
+        var category = IncomeCategory.ItemsSource
+        .Cast<IncomeCategories>()
+        .FirstOrDefault(c => c.ICategories == data.Category);
+        if (category != null)
         {
-            IncomeCategory.SelectedItem = data.Category;
-            IncomeCustomCategory.IsVisible = false;
-        }
-        else
-        {
-            IncomeCategory.SelectedItem = "Other";
-            IncomeCustomCategory.IsVisible = true;
-            IncomeCustomCategory.Text = data.Category;
+            IncomeCategory.SelectedItem = category; // Gán đúng đối tượng
         }
         IncomeDate.Date = data.Date; 
         IncomeNote.Text = data.Note == "None" ? "" : data.Note; 
     }
-
 
     private void OnIncomeCloseClicked(object sender, EventArgs e)
     {

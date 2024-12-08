@@ -28,8 +28,12 @@
 
         <MenuBarItem Text="Language">
             <MenuFlyoutItem Text="English" Clicked="UseEnglish" />
-            <MenuFlyoutItem Text="Tiếng Việt" Clicked="UseEnglish" />
+            <MenuFlyoutItem Text="Vietnamese" Clicked="UseEnglish" />
         </MenuBarItem>
+        <MenuBarItem Text="Delete database">
+            <MenuFlyoutItem Text="Delete database" Clicked="Delete" />
+        </MenuBarItem>
+
     </Shell.MenuBarItems>
 
     <ShellContent
