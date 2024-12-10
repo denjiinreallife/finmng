@@ -5,20 +5,20 @@ namespace FinancialManagement;
 
 public partial class IncomePopup : Popup
 {
-    private IncomeViewModel ViewModel => BindingContext as IncomeViewModel;
-    private MainViewModel _mainPage;
+    private IncomePopupViewModel ViewModel => BindingContext as IncomePopupViewModel;
+    private HomePageViewModel _homePage;
+    private AppShellViewModel _appShell;
     public bool IsEditing { get; set; } = false; 
     public IncomeOutcome EditingData { get; set; } 
     private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
-    public IncomePopup(MainViewModel mainPage)
+    public IncomePopup(HomePageViewModel homePage)
     {
         InitializeComponent();
         dbService = new DatabaseService(databasePath);
-        _mainPage = mainPage;
+        _homePage = homePage;
         IncomeTime.Time = DateTime.Now.TimeOfDay;
-        IncomeCategory.SelectedIndex = 0;
-        BindingContext = new IncomeViewModel();
+        BindingContext = new IncomePopupViewModel();
     }
 
     private async void OnIncomeSubmitClicked(object sender, EventArgs e)
@@ -74,13 +74,13 @@ public partial class IncomePopup : Popup
             dbService.UpdateInoutcome(
                 new IncomeOutcome
                 {
-                    Id = EditingData.Id,
-                    Value = value,
-                    Type = "Income",
-                    Category = category,
-                    Date = date,
-                    Note = note,
-                    Timestamp = DateTime.Now
+                    IOId = EditingData.IOId,
+                    IOValue = value,
+                    IOType = "Income",
+                    IOCategory = category,
+                    IODate = date,
+                    IONote = note,
+                    IOTimestamp = DateTime.Now
                 }
             );
         }
@@ -89,17 +89,17 @@ public partial class IncomePopup : Popup
             dbService.AddInoutcome(
                 new IncomeOutcome
                 {
-                    Value = value,
-                    Type = "Income",
-                    Category = category,
-                    Date = date,
-                    Note = note,
-                    Timestamp = DateTime.Now
+                    IOValue = value,
+                    IOType = "Income",
+                    IOCategory = category,
+                    IODate = date,
+                    IONote = note,
+                    IOTimestamp = DateTime.Now
                 }
             );
         }
 
-		if (_mainPage is MainViewModel viewModel)
+		if (_homePage is HomePageViewModel viewModel)
 		{
 			viewModel.LoadData();
 		}
@@ -122,21 +122,28 @@ public partial class IncomePopup : Popup
         }
     }
 
+    private void OnPotChanged(object sender, EventArgs e)
+    {
+        var picker = (Picker)sender;
+        var selectedValue = picker.SelectedItem as MoneyPot;
+        Console.WriteLine(selectedValue.PotName);
+    }
+
     public void LoadIncomeDataForEdit(IncomeOutcome data)
     {
         IsEditing = true;
         IncomeDeleteBtn.IsVisible = true; 
         EditingData = data;
-        IncomeValue.Text = data.Value.ToString(); 
+        IncomeValue.Text = data.IOValue.ToString(); 
         var category = IncomeCategory.ItemsSource
         .Cast<IncomeCategories>()
-        .FirstOrDefault(c => c.ICategories == data.Category);
+        .FirstOrDefault(c => c.ICategories == data.IOCategory);
         if (category != null)
         {
             IncomeCategory.SelectedItem = category; // Gán đúng đối tượng
         }
-        IncomeDate.Date = data.Date; 
-        IncomeNote.Text = data.Note == "None" ? "" : data.Note; 
+        IncomeDate.Date = data.IODate; 
+        IncomeNote.Text = data.IONote == "None" ? "" : data.IONote; 
     }
 
     private void OnIncomeCloseClicked(object sender, EventArgs e)
@@ -151,9 +158,9 @@ public partial class IncomePopup : Popup
             return;
         }
 
-        dbService.DeleteInoutcome(EditingData.Id);
+        dbService.DeleteInoutcome(EditingData.IOId);
 
-        _mainPage.LoadData();
+        _homePage.LoadData();
 
         Close();
     }

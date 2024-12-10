@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="FinancialManagement.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:FinancialManagement"
+    Shell.FlyoutBehavior="Disabled"
+    Title="FinancialManagement">
+
+    <Shell.MenuBarItems>
+        <MenuBarItem Text="File">
+            <MenuFlyoutItem Text="Import from ..."
+                            Command="{Binding DataImportCommand}" />
+            <MenuFlyoutSubItem  Text="Export to ...">
+                <MenuFlyoutItem Text="PDF" 
+                                Command="{Binding PDFDataExportCommand}" />
+                <MenuFlyoutItem Text="Excel" 
+                                Command="{Binding ExcelDataExportCommand}" />
+            </MenuFlyoutSubItem>
+        </MenuBarItem>
+
+        <MenuBarItem Text="Style">
+            <MenuFlyoutItem x:Name="UsedStyleGraph" 
+                            Text="{Binding UsedStyleGraphText, Mode=TwoWay}" 
+                            Command="{Binding ShowGraphStyleCommand}" />
+            <MenuFlyoutItem x:Name="UsedStyleJams" 
+                            Text="{Binding UsedStyleJamsText, Mode=TwoWay}" 
+                            Command="{Binding ShowJamsStyleCommand}" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Unit">
+            <MenuFlyoutItem x:Name="UsedUnitVND" 
+                            Text="{Binding UsedUnitVNDText, Mode=TwoWay}" 
+                            Command="{Binding UsedVNDCommand}" />
+            <MenuFlyoutItem x:Name="UsedUnitUSD" 
+                            Text="{Binding UsedUnitUSDText, Mode=TwoWay}" 
+                            Command="{Binding UsedUSDCommand}" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Language">
+            <MenuFlyoutItem x:Name="UsedLanguageEnglish" 
+                            Text="{Binding UsedLanguageEnglishText}" 
+                            Command="{Binding UseEnglishCommand}" />
+            <MenuFlyoutItem x:Name="UsedLanguageVietnamese" 
+                            Text="{Binding UsedLanguageVietnameseText}" 
+                            Command="{Binding UseVietnameseCommand}" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="PotsDivide">
+            <MenuFlyoutItem 
+                            x:Name="UsedPotsDivide" 
+                            Text="{Binding UsedPotsDivideText}" 
+                            Command="{Binding PotsUsedCommand}" />
+            <MenuFlyoutItem x:Name="UnusedPotsDivide" 
+                            Text="{Binding UnusedPotsDivideText}" 
+                            Command="{Binding PotsUnusedCommand}" />
+        </MenuBarItem>
+        <MenuBarItem Text="Delete database">
+            <MenuFlyoutItem Text="Delete database" 
+                            Command="{Binding DeleteDatabaseCommand}" />
+        </MenuBarItem>
+    </Shell.MenuBarItems>
+
+
+    <ShellContent
+        ContentTemplate="{DataTemplate local:HomePage}"
+        Route="HomePage" />
+
+</Shell>

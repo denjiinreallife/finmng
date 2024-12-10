@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinancialManagement.HistoryPage">
+    <HorizontalStackLayout WidthRequest="50000">
+    <Grid>
+        <!-- Thanh menu -->
+        <StackLayout BackgroundColor="Transparent" 
+                    Orientation="Vertical" 
+                    Padding="10"
+                    WidthRequest="100"
+                    HorizontalOptions="StartAndExpand"
+                    VerticalOptions="CenterAndExpand">
+            <Button Text="Home" Command="{Binding NavigateHomeCommand}" />
+            <Button Text="Profile" Command="{Binding NavigateProfileCommand}" />
+            <Button Text="Settings" Command="{Binding NavigateSettingsCommand}" />
+        </StackLayout>
+
+        <!-- Nội dung chính -->
+        <!-- <ContentView Grid.Row="1">
+            <Label Text="Welcome to the Main Page!" 
+                   VerticalOptions="CenterAndExpand" 
+                   HorizontalOptions="CenterAndExpand" />
+        </ContentView> -->
+    </Grid> 
+    <Grid>
+        <!-- Thanh menu -->
+        <StackLayout BackgroundColor="Transparent" 
+                    Orientation="Horizontal" 
+                    Padding="10"
+                    HorizontalOptions="CenterAndExpand"
+                    VerticalOptions="StartAndExpand">
+            <Button Text="Home" Command="{Binding NavigateHomeCommand}" />
+            <Button Text="Profile" Command="{Binding NavigateProfileCommand}" />
+            <Button Text="Settings" Command="{Binding NavigateSettingsCommand}" />
+        </StackLayout>
+    </Grid> 
+    </HorizontalStackLayout>
+</ContentPage>

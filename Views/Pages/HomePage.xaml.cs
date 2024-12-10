@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Maui.Views;
 using System.Collections.ObjectModel;
 namespace FinancialManagement;
-public partial class MainPage : ContentPage
+public partial class HomePage : ContentPage
 {
     public ObservableCollection<IncomeOutcome> generalData { get; set; } = new ObservableCollection<IncomeOutcome>();
     public ObservableCollection<IncomeOutcome> incomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
@@ -11,26 +11,26 @@ public partial class MainPage : ContentPage
 	public double totalOutcome = 0;
 	private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
-	public MainPage()
+	public HomePage()
 	{
 		InitializeComponent();
 		dbService = new DatabaseService(databasePath);
-        BindingContext = new MainViewModel();
+        BindingContext = new HomePageViewModel();
 	}
 
 	private void AddIncomeClicked(object sender, EventArgs e)
 	{
-		if (BindingContext is MainViewModel mainViewModel)
+		if (BindingContext is HomePageViewModel homePageViewModel)
     	{
-			var popup = new IncomePopup(mainViewModel); 
+			var popup = new IncomePopup(homePageViewModel); 
 			this.ShowPopup(popup);  
 		}
 	}
 	private void AddOutcomeClicked(object sender, EventArgs e)
 	{
-		if (BindingContext is MainViewModel mainViewModel)
+		if (BindingContext is HomePageViewModel homePageViewModel)
     	{
-        	var popup = new OutcomePopup(mainViewModel); 
+        	var popup = new OutcomePopup(homePageViewModel); 
         	this.ShowPopup(popup);    
 		}
 	}
@@ -40,20 +40,20 @@ public partial class MainPage : ContentPage
 		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
 			Popup popup = null;
-			if (selectedItem.Type == "Income") 
+			if (selectedItem.IOType == "Income") 
 			{
-				if (BindingContext is MainViewModel mainViewModel)
+				if (BindingContext is HomePageViewModel homePageViewModel)
 				{
-					var incomePopup = new IncomePopup(mainViewModel);
+					var incomePopup = new IncomePopup(homePageViewModel);
 					incomePopup.LoadIncomeDataForEdit(selectedItem); 
 					popup = incomePopup;
 				}
 			}
 			else 
 			{
-				if (BindingContext is MainViewModel mainViewModel)
+				if (BindingContext is HomePageViewModel homePageViewModel)
 				{
-					var outcomePopup = new OutcomePopup(mainViewModel);
+					var outcomePopup = new OutcomePopup(homePageViewModel);
 					outcomePopup.LoadOutcomeDataForEdit(selectedItem);
 					popup = outcomePopup;
 				}
@@ -69,9 +69,9 @@ public partial class MainPage : ContentPage
 	{
 		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			if (BindingContext is MainViewModel mainViewModel)
+			if (BindingContext is HomePageViewModel homePageViewModel)
 			{
-				var popup = new IncomePopup(mainViewModel);
+				var popup = new IncomePopup(homePageViewModel);
 				popup.LoadIncomeDataForEdit(selectedItem); 
 				Application.Current.MainPage.ShowPopup(popup);
 			}
@@ -83,9 +83,9 @@ public partial class MainPage : ContentPage
 	{
 		if (e.CurrentSelection.FirstOrDefault() is IncomeOutcome selectedItem)
 		{
-			if (BindingContext is MainViewModel mainViewModel)
+			if (BindingContext is HomePageViewModel homePageViewModel)
 			{
-				var popup = new OutcomePopup(mainViewModel);
+				var popup = new OutcomePopup(homePageViewModel);
 				popup.LoadOutcomeDataForEdit(selectedItem); 
 				Application.Current.MainPage.ShowPopup(popup);
 			}
@@ -145,7 +145,7 @@ public partial class MainPage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		if (BindingContext is MainViewModel viewModel)
+		if (BindingContext is HomePageViewModel viewModel)
 		{
 			viewModel.LoadData(); // Gọi phương thức LoadData
 		}

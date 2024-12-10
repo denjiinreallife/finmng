@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace FinancialManagement;
 
-public class MainViewModel : INotifyPropertyChanged
+public class HomePageViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<IncomeOutcome> generalData { get; set; } = new ObservableCollection<IncomeOutcome>();
     public ObservableCollection<IncomeOutcome> incomeData { get; set; } = new ObservableCollection<IncomeOutcome>();
@@ -42,7 +42,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    public MainViewModel()
+    public HomePageViewModel()
     {
 		dbService = new DatabaseService(databasePath);
     	LoadData();

@@ -2,12 +2,15 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace FinancialManagement;
-public class IncomeViewModel : INotifyPropertyChanged
+public class IncomePopupViewModel : INotifyPropertyChanged
 {
+    private AppShellViewModel _appShellViewModel = new AppShellViewModel();
     private bool _isNewIncomeCategory;
     public ObservableCollection<IncomeCategories> IncomeCategories { get ; set; } = new ObservableCollection<IncomeCategories>();
 	private readonly DatabaseService dbService;
+    public ObservableCollection<MoneyPot> MoneyPots { get; set; } = new ObservableCollection<MoneyPot>();
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
+    public bool IsPotsDivide { get; set; }
     public bool IsNewIncomeCategory
     {
         get => _isNewIncomeCategory;
@@ -17,11 +20,17 @@ public class IncomeViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsNewIncomeCategory));
         }
     }
-    public IncomeViewModel()
+    public IncomePopupViewModel()
     {
 		dbService = new DatabaseService(databasePath);
-    	LoadIncomeCategory();
         IsNewIncomeCategory = false;
+        if (_appShellViewModel is AppShellViewModel viewModel)
+        {
+            viewModel.LoadConfig();
+            IsPotsDivide = viewModel.IsPotsDivide;
+        }
+    	LoadIncomeCategory();
+        LoadMoneyPots();
     }
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -37,5 +46,14 @@ public class IncomeViewModel : INotifyPropertyChanged
 		{
 			IncomeCategories.Add(item);
 		}
+    }
+    public void LoadMoneyPots()
+    {
+        MoneyPots.Clear(); 
+        var moneyPot = dbService.GetMoneyPots();
+        foreach (var item in moneyPot)
+        {
+            MoneyPots.Add(item);
+        }
     }
 }

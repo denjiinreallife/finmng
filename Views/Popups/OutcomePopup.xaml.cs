@@ -5,20 +5,20 @@ namespace FinancialManagement;
 
 public partial class OutcomePopup : Popup
 {
-    private OutcomeViewModel ViewModel => BindingContext as OutcomeViewModel;
-    private MainViewModel _mainPage;
+    private OutcomePopupViewModel ViewModel => BindingContext as OutcomePopupViewModel;
+    private HomePageViewModel _homePage;
     public bool IsEditing { get; set; } = false; 
     public IncomeOutcome EditingData { get; set; } 
     private readonly DatabaseService dbService;
     string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
-    public OutcomePopup(MainViewModel mainPage)
+    public OutcomePopup(HomePageViewModel homePage)
     {
         InitializeComponent();
         dbService = new DatabaseService(databasePath);
-        _mainPage = mainPage;
+        _homePage = homePage;
         OutcomeTime.Time = DateTime.Now.TimeOfDay;
         OutcomeCategory.SelectedIndex = 0;
-        BindingContext = new OutcomeViewModel();
+        BindingContext = new OutcomePopupViewModel();
     }
 
     private async void OnOutcomeSubmitClicked(object sender, EventArgs e)
@@ -74,13 +74,13 @@ public partial class OutcomePopup : Popup
             dbService.UpdateInoutcome(
                 new IncomeOutcome
                 {
-                    Id = EditingData.Id,
-                    Value = value,
-                    Type = "Outcome",
-                    Category = category,
-                    Date = date,
-                    Note = note,
-                    Timestamp = DateTime.Now
+                    IOId = EditingData.IOId,
+                    IOValue = value,
+                    IOType = "Outcome",
+                    IOCategory = category,
+                    IODate = date,
+                    IONote = note,
+                    IOTimestamp = DateTime.Now
                 }
             );
         }
@@ -89,17 +89,17 @@ public partial class OutcomePopup : Popup
             dbService.AddInoutcome(
                 new IncomeOutcome
                 {
-                    Value = value,
-                    Type = "Outcome",
-                    Category = category,
-                    Date = date,
-                    Note = note,
-                    Timestamp = DateTime.Now
+                    IOValue = value,
+                    IOType = "Outcome",
+                    IOCategory = category,
+                    IODate = date,
+                    IONote = note,
+                    IOTimestamp = DateTime.Now
                 }
             );
         }
 
-		if (_mainPage is MainViewModel viewModel)
+		if (_homePage is HomePageViewModel viewModel)
 		{
 			viewModel.LoadData(); 
 		}
@@ -126,16 +126,16 @@ public partial class OutcomePopup : Popup
         IsEditing = true;
         OutcomeDeleteBtn.IsVisible = true; 
         EditingData = data;
-        OutcomeValue.Text = data.Value.ToString(); 
+        OutcomeValue.Text = data.IOValue.ToString(); 
         var category = OutcomeCategory.ItemsSource
         .Cast<OutcomeCategories>()
-        .FirstOrDefault(c => c.OCategories == data.Category);
+        .FirstOrDefault(c => c.OCategories == data.IOCategory);
         if (category != null)
         {
             OutcomeCategory.SelectedItem = category; // Gán đúng đối tượng
         }
-        OutcomeDate.Date = data.Date; 
-        OutcomeNote.Text = data.Note == "None" ? "" : data.Note; 
+        OutcomeDate.Date = data.IODate; 
+        OutcomeNote.Text = data.IONote == "None" ? "" : data.IONote; 
     }
 
     private void OnOutcomeCloseClicked(object sender, EventArgs e)
@@ -150,9 +150,9 @@ public partial class OutcomePopup : Popup
             return;
         }
 
-        dbService.DeleteInoutcome(EditingData.Id);
+        dbService.DeleteInoutcome(EditingData.IOId);
 
-        _mainPage.LoadData();
+        _homePage.LoadData();
 
         Close();
     }

@@ -8,6 +8,14 @@ public static class MauiProgram
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
+        builder.Services.AddSingleton<IncomePopupViewModel>();
+        builder.Services.AddSingleton<OutcomePopupViewModel>();
+        builder.Services.AddSingleton<AppShellViewModel>();
+		// builder.Services.AddTransient<IncomePopupViewModel>(serviceProvider =>
+		// {
+		// 	var appShellViewModel = serviceProvider.GetRequiredService<AppShellViewModel>();
+		// 	return new IncomePopupViewModel(appShellViewModel);
+		// });
 		builder
 			.UseMauiApp<App>()
             .UseMauiCommunityToolkit()

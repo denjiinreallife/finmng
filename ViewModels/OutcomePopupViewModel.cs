@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace FinancialManagement;
-public class OutcomeViewModel : INotifyPropertyChanged
+public class OutcomePopupViewModel : INotifyPropertyChanged
 {
     private bool _isNewOutcomeCategory;
     public ObservableCollection<OutcomeCategories> OutcomeCategories { get ; set; } = new ObservableCollection<OutcomeCategories>();
@@ -17,7 +17,7 @@ public class OutcomeViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsNewOutcomeCategory));
         }
     }
-    public OutcomeViewModel()
+    public OutcomePopupViewModel()
     {
 		dbService = new DatabaseService(databasePath);
     	LoadOutcomeCategory();

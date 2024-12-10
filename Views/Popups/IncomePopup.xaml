@@ -28,6 +28,14 @@
         <Entry x:Name="NewIncomeCategory"
            Placeholder="Enter new category..."
            IsVisible="{Binding IsNewIncomeCategory}" />
+
+        <Picker x:Name="IncomePot" 
+                Title="Choose pot"
+                IsVisible="{Binding IsPotsDivide}"
+                ItemsSource="{Binding MoneyPots}"
+                ItemDisplayBinding="{Binding PotName}"
+                SelectedIndexChanged="OnPotChanged">
+        </Picker>
            
         <Label Text="Date" FontSize="16" />
         <DatePicker x:Name="IncomeDate"

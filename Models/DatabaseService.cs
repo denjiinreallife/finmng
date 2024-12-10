@@ -19,6 +19,19 @@ public class DatabaseService
             Directory.CreateDirectory(dataFolder);
         }
         _database = new SQLiteConnection(dbPath);
+        if (!TableExists("UserConfig"))
+        {
+            _database.CreateTable<UserConfig>();
+            _database.Insert(
+                new UserConfig 
+                { 
+                    UCLanguage  = Language.English,
+                    UCVShow     = VisualizationShow.Graph,
+                    UCMoneyUnit = MoneyUnit.VND,
+                    UCPots      = Pots.Unused  
+                }
+            );
+        }
         if (!TableExists("IncomeOutcome"))
         {
             _database.CreateTable<IncomeOutcome>();
@@ -32,6 +45,11 @@ public class DatabaseService
         {
             _database.CreateTable<OutcomeCategories>();
             _database.Insert(new OutcomeCategories { OCategories = "Add new outcome category" });
+        }
+        if (!TableExists("MoneyPot"))
+        {
+            _database.CreateTable<MoneyPot>();
+            _database.Insert(new MoneyPot { PotName = "Total", PotValue= 0 });
         }
     }
     
@@ -49,9 +67,9 @@ public class DatabaseService
         var query = _database.Table<IncomeOutcome>().AsQueryable();
         if (!string.IsNullOrEmpty(type))
         {
-            query = query.Where(x => x.Type == type);
+            query = query.Where(x => x.IOType == type);
         }
-        return query.OrderByDescending(x => x.Date).ToList();
+        return query.OrderByDescending(x => x.IODate).ToList();
     }
 
     public int AddInoutcome(IncomeOutcome Data)
@@ -72,11 +90,11 @@ public class DatabaseService
     public double GetTotalValue(string? type = null)
     {
         double totalIncome = _database.Table<IncomeOutcome>()
-                                    .Where(x => x.Type == "Income")
-                                    .Sum(x => x.Value);
+                                    .Where(x => x.IOType == "Income")
+                                    .Sum(x => x.IOValue);
         double totalOutcome = _database.Table<IncomeOutcome>()
-                                   .Where(x => x.Type == "Outcome")
-                                   .Sum(x => x.Value);
+                                   .Where(x => x.IOType == "Outcome")
+                                   .Sum(x => x.IOValue);
 
         if (!string.IsNullOrEmpty(type))
         {
@@ -91,7 +109,7 @@ public class DatabaseService
     public List<IncomeCategories> GetIncomeCategories()
     {
         var query = _database.Table<IncomeCategories>().AsQueryable();
-        return query.OrderByDescending(x => x.Id).ToList();
+        return query.OrderByDescending(x => x.IId).ToList();
     }
 
     public int AddIncomeCategory(IncomeCategories Data)
@@ -114,7 +132,7 @@ public class DatabaseService
     public List<OutcomeCategories> GetOutcomeCategories()
     {
         var query = _database.Table<OutcomeCategories>().AsQueryable();
-        return query.OrderByDescending(x => x.Id).ToList();
+        return query.OrderByDescending(x => x.OId).ToList();
     }
 
     public int AddOutcomeCategory(OutcomeCategories Data)
@@ -132,4 +150,49 @@ public class DatabaseService
         return _database.Update(Data);
     }
     /******************* IncomeCategories TABLE FUNCTION END *******************/
+
+    /******************* MoneyPots TABLE FUNCTION START *******************/
+    public List<MoneyPot> GetMoneyPots()
+    {
+        var query = _database.Table<MoneyPot>().AsQueryable();
+        return query.ToList();
+    }
+
+    public int AddMoneyPots(MoneyPot Data)
+    {
+        return _database.Insert(Data);
+    }
+
+    public int DeleteMoneyPots(int id)
+    {
+        return _database.Delete<MoneyPot>(id);
+    }
+
+    public int UpdateMoneyPots(MoneyPot Data)
+    {
+        return _database.Update(Data);
+    }
+
+    public double GetPotValue(string? type = null)
+    {
+        double PotValue = _database.Table<MoneyPot>()
+                        .FirstOrDefault(x => x.PotName == "Total").PotValue;
+        if (type != null) 
+        {
+            PotValue = _database.Table<MoneyPot>()
+                        .FirstOrDefault(x => x.PotName == type).PotValue;
+        }
+        return PotValue;
+    }
+    /******************* MoneyPots TABLE FUNCTION END *******************/
+
+    /******************* UserConfig TABLE FUNCTION START *******************/
+    public UserConfig GetUserConfig()
+    {
+        return _database.Table<UserConfig>().First();
+    }
+    public int UpdateUserConfig(UserConfig Data)
+    {
+        return _database.Update(Data);
+    }
 }
