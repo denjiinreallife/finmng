@@ -147,10 +147,10 @@
                         <DataTemplate>
                             <StackLayout Orientation="Horizontal" Padding="10" 
                                         HorizontalOptions="Center">
-                                <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
-                                <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" />
-                                <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
-                                <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
+                                <Label Text="{Binding IODate, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
+                                <Label Text="{Binding IOType}" WidthRequest="100" HorizontalOptions="Center" />
+                                <Label Text="{Binding IOCategory}" WidthRequest="150" HorizontalOptions="Center" />
+                                <Label Text="{Binding IOValue}" WidthRequest="100" HorizontalOptions="Center" />
                             </StackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -164,10 +164,10 @@
                         <DataTemplate>
                             <StackLayout Orientation="Horizontal" Padding="10" 
                                         HorizontalOptions="Center">
-                                <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
+                                <Label Text="{Binding IODate, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
                                 <!-- <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" /> -->
-                                <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
-                                <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
+                                <Label Text="{Binding IOCategory}" WidthRequest="150" HorizontalOptions="Center" />
+                                <Label Text="{Binding IOValue}" WidthRequest="100" HorizontalOptions="Center" />
                             </StackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -181,10 +181,10 @@
                         <DataTemplate>
                             <StackLayout Orientation="Horizontal" Padding="10" 
                                         HorizontalOptions="Center">
-                                <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
+                                <Label Text="{Binding IODate, StringFormat='{0:dd/MM/yyyy}'}" WidthRequest="120" HorizontalOptions="Center" />
                                 <!-- <Label Text="{Binding Type}" WidthRequest="100" HorizontalOptions="Center" /> -->
-                                <Label Text="{Binding Category}" WidthRequest="150" HorizontalOptions="Center" />
-                                <Label Text="{Binding Value}" WidthRequest="100" HorizontalOptions="Center" />
+                                <Label Text="{Binding IOCategory}" WidthRequest="150" HorizontalOptions="Center" />
+                                <Label Text="{Binding IOValue}" WidthRequest="100" HorizontalOptions="Center" />
                             </StackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

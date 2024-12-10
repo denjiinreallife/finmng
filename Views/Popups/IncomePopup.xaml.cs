@@ -41,7 +41,14 @@ public partial class IncomePopup : Popup
         }
         else
         {
-            category = selectedCategory.ICategories as string;
+            if (selectedCategory != null)
+            {
+                category = selectedCategory.ICategories as string;
+            }
+            else
+            {
+                category = null;
+            }
         }
 
         if (string.IsNullOrWhiteSpace(note))

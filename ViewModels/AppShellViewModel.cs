@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace FinancialManagement
 {
-    public class AppShellViewModel
+    public class AppShellViewModel : INotifyPropertyChanged
     {
         private readonly DatabaseService dbService;
         string databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "database.db");
