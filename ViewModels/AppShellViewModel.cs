@@ -340,16 +340,11 @@ namespace FinancialManagement
             IsPotsDivide = true;
             UserConfig userConfig = dbService.GetUserConfig();
             userConfig.UCPots = Pots.Used;
-            dbService.UpdateUserConfig(
-                new UserConfig
-                {
-                    UCLanguage = userConfig.UCLanguage,
-                    UCMoneyUnit = userConfig.UCMoneyUnit,
-                    UCVShow = userConfig.UCVShow,
-                    UCPots = userConfig.UCPots,
-                }
-            );
             dbService.UpdateUserConfig(userConfig);
+            List <MoneyPot> moneyPots = dbService.GetMoneyPots();
+            MoneyPot defaultPot = moneyPots[0];
+            defaultPot.PotName = "Add new pot";
+            dbService.UpdateMoneyPots(defaultPot);
         }
 
         private void PotsUnused()
@@ -359,21 +354,17 @@ namespace FinancialManagement
             IsPotsDivide = false;
             UserConfig userConfig = dbService.GetUserConfig();
             userConfig.UCPots = Pots.Unused;
-            dbService.UpdateUserConfig(
-                new UserConfig
-                {
-                    UCLanguage = userConfig.UCLanguage,
-                    UCMoneyUnit = userConfig.UCMoneyUnit,
-                    UCVShow = userConfig.UCVShow,
-                    UCPots = userConfig.UCPots,
-                }
-            );
             dbService.UpdateUserConfig(userConfig);
+            List <MoneyPot> moneyPots = dbService.GetMoneyPots();
+            MoneyPot defaultPot = moneyPots[0];
+            defaultPot.PotName = "Total";
+            dbService.UpdateMoneyPots(defaultPot);
+            dbService.MergeAllPots();
         }
 
         private void DeleteDatabase()
         {
-            // Logic for deleting the database
+            dbService.DropAllTables();
         }
     }
 }

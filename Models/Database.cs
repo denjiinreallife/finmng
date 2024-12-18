@@ -10,7 +10,7 @@ public class IncomeOutcome
     public string       IOType { get; set; }
     [MaxLength(20), NotNull]
     public string       IOCategory { get; set; }
-    [MaxLength(50)]
+    [MaxLength(50), NotNull]
     public string       IOPotName { get; set; }
     [MaxLength(100)]
     public string       IONote { get; set; }

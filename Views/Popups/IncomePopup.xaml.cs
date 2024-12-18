@@ -27,6 +27,8 @@ public partial class IncomePopup : Popup
         string note = IncomeNote.Text;
         var selectedCategory = IncomeCategory.SelectedItem as IncomeCategories;
         string category;
+        var selectedPot = IncomePot.SelectedItem as string;
+        string pot = "Total";
         DateTime date = IncomeDate.Date;
 
         if (ViewModel.IsNewIncomeCategory)
@@ -74,6 +76,11 @@ public partial class IncomePopup : Popup
             return;
         }
 
+        if (!string.IsNullOrWhiteSpace(selectedPot))
+        {
+            pot = selectedPot;
+        }
+
         Application.Current.MainPage.DisplayAlert("Income infomation", $"Income: {value}\nCategory: {category}\nDate: {date:dd/MM/yyyy}\nNote: {note}", "OK");
 
         if (IsEditing)
@@ -85,6 +92,7 @@ public partial class IncomePopup : Popup
                     IOValue = value,
                     IOType = "Income",
                     IOCategory = category,
+                    IOPotName = pot,
                     IODate = date,
                     IONote = note,
                     IOTimestamp = DateTime.Now
@@ -99,6 +107,7 @@ public partial class IncomePopup : Popup
                     IOValue = value,
                     IOType = "Income",
                     IOCategory = category,
+                    IOPotName = pot,
                     IODate = date,
                     IONote = note,
                     IOTimestamp = DateTime.Now

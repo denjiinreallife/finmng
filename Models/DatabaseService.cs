@@ -53,12 +53,29 @@ public class DatabaseService
         }
     }
     
-    public async Task DeleteDatabaseAsync(string dbPath)
+    public List<string> GetTableNames()
     {
-        if (File.Exists(dbPath))
+        const string query = "SELECT name FROM sqlite_master WHERE type='table'";
+        var tableNames = _database.Query<TableInfo>(query).Select(t => t.Name).ToList();
+        return tableNames;
+    }
+    public void DropAllTables()
+    {
+        var tableNames = GetTableNames();
+        foreach (var tableName in tableNames)
         {
-            File.Delete(dbPath);
+            if (tableName != "sqlite_sequence")
+            {
+                var dropTableQuery = $"DROP TABLE IF EXISTS {tableName}";
+                _database.Execute(dropTableQuery);
+            }
         }
+        const string query = "DELETE FROM sqlite_sequence";
+        _database.Execute(query);
+    }
+    public class TableInfo
+    {
+        public string Name { get; set; }
     }
 
     /******************* IncomeOutcome TABLE FUNCTION START *******************/
@@ -183,6 +200,24 @@ public class DatabaseService
                         .FirstOrDefault(x => x.PotName == type).PotValue;
         }
         return PotValue;
+    }
+    public void MergeAllPots()
+    {
+        List<MoneyPot> moneyPots = GetMoneyPots();
+        double sumPotsValue = 0;
+        foreach (var pot in moneyPots)
+        {
+            sumPotsValue += pot.PotValue;
+        }
+        moneyPots[0].PotValue = sumPotsValue;
+        UpdateMoneyPots(moneyPots[0]);
+        foreach (var pot in moneyPots)
+        {
+            if (pot.PotId != 0)
+            {
+                DeleteMoneyPots(pot.PotId);
+            }
+        }
     }
     /******************* MoneyPots TABLE FUNCTION END *******************/
 

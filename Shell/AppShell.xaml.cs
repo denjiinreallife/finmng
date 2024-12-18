@@ -27,13 +27,6 @@ public partial class AppShell : Shell
 		if (BindingContext is AppShellViewModel viewModel)
 		{
 			viewModel.LoadConfig();
-			RefreshUI();
 		}
-	}
-	private void RefreshUI()
-	{
-		var currentBindingContext = BindingContext;
-		BindingContext = null;
-		BindingContext = currentBindingContext;
 	}
 }

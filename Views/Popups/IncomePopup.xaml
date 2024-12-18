@@ -27,6 +27,7 @@
            Placeholder="Enter new category..."
            IsVisible="{Binding IsNewIncomeCategory}" />
 
+        <Label Text="Source" FontSize="16" IsVisible="{Binding IsPotsDivide}"/>
         <Picker x:Name="IncomePot" 
                 Title="Choose pot"
                 IsVisible="{Binding IsPotsDivide}"
